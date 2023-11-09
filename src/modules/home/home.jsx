@@ -12,6 +12,7 @@ const Confirmation = lazy(() => import("../confirmation/confirmation"));
 const FlightSearch = lazy(() => import("../search/flight-search"));
 const FlightBooking = lazy(() => import("../booking/flight-booking"));
 const GoogleAuth = lazy(() => import("./googleauth"));
+const Payment = lazy(() => import("../booking/payment"));
 
 const Home = () => {
   return (
@@ -36,6 +37,11 @@ const Home = () => {
                       exact={true}
                       path={`/flight-booking`}
                       component={FlightBooking}
+                    />
+                    <Route
+                      exact={true}
+                      path={`/payment`}
+                      component={Payment}
                     />
                     <Route
                       exact={true}

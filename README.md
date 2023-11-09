@@ -26,3 +26,16 @@ In case of any errors
 `npm audit fix --force`
 
 Landing page is home.jsx, add all routes in it
+
+
+Creating google authentication
+1. Login to https://console.cloud.google.com/
+2. Go to APIs & Services, click on Credentials in the left pane
+3. Click on create credentials, select OAuth Client ID request
+4. Select application as Web Application, give it a name
+5. Provide Authorised JavaScript origins as 
+"http://127.0.0.1:3000"
+"http://localhost:3000"
+6. Provide Authorised redirect URIs as  
+"http://127.0.0.1:3000/callback"
+"http://localhost:3000/callback"
