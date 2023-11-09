@@ -11,6 +11,7 @@ const Dashboard = lazy(() => import("./dashboard"));
 const Confirmation = lazy(() => import("../confirmation/confirmation"));
 const FlightSearch = lazy(() => import("../search/flight-search"));
 const FlightBooking = lazy(() => import("../booking/flight-booking"));
+const GoogleAuth = lazy(() => import("./googleauth"));
 
 const Home = () => {
   return (
@@ -25,7 +26,7 @@ const Home = () => {
               <ErrorBoundaries>
                 <Suspense fallback={<div>Loading...</div>}>
                   <Switch>
-                    <Route path={`/`} exact={true} component={Dashboard} />
+                    <Route path={`/`} exact={true} component={FlightSearch} />
                     <Route
                       exact={true}
                       path={`/flight-search`}
@@ -35,6 +36,11 @@ const Home = () => {
                       exact={true}
                       path={`/flight-booking`}
                       component={FlightBooking}
+                    />
+                    <Route
+                      exact={true}
+                      path={`/authentication`}
+                      component={GoogleAuth}
                     />
                     <Route
                       exact={true}

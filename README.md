@@ -13,22 +13,16 @@ Clone down this repository. You will need `node` and `npm` installed globally on
 
 Installation:
 
-`npm install`
-`npm install @material-ui/core @material-ui/core/styles`
-`npm install react-dom`
-`npm install redux`
-`npm install react-redux`
-`npm install react-router-dom`
-`npm install redux-saga`
-`npm install react-router`
-`npm install @material-ui/lab`
-
 To Start Server:
-
 `npm start`
 
 To Visit App:
-
 `localhost:3000`
 
+Install google login for react
 `npm install react-google-login`
+
+In case of any errors
+`npm audit fix --force`
+
+Landing page is home.jsx, add all routes in it
