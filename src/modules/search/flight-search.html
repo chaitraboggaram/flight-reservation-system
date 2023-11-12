@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Flight Search</title>
-  <!-- Include Bootstrap CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <!-- Include your custom CSS file -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -42,46 +40,34 @@
             <input type="date" class="form-control" id="returnDate">
           </div>
           <button type="button" class="btn btn-primary" id="searchFlight" disabled>Search Flight</button>
-          <!-- <p id="cityError" class="error mt-3">Source and Destination City cannot be the same</p> -->
         </form>
       </div>
     </div>
     <div class="row mt-5">
       <div class="col-12">
         <h2>Flight Search Results</h2>
-        <div id="flightList">
-          <!-- Flight search results will be displayed here -->
-        </div>
+        <div id="flightList"></div>
       </div>
     </div>
   </div>
-
-  <!-- Include Bootstrap and jQuery JavaScript -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.6.1/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Include your custom JavaScript file -->
   <script src="script.js"></script>
   <script>
-    // JavaScript logic for showing/hiding return date field
     document.getElementById("oneWay").addEventListener("change", function() {
       document.getElementById("returnDateContainer").style.display = "none";
       document.getElementById("returnDate").value = "";
     });
-
     document.getElementById("roundTrip").addEventListener("change", function() {
       document.getElementById("returnDateContainer").style.display = "block";
     });
-
-    // JavaScript logic for handling city error
     document.getElementById("source").addEventListener("input", checkCityError);
     document.getElementById("destination").addEventListener("input", checkCityError);
-
     function checkCityError() {
       const sourceCity = document.getElementById("source").value;
       const destinationCity = document.getElementById("destination").value;
       const cityError = document.getElementById("cityError");
       const searchFlightButton = document.getElementById("searchFlight");
-
       if (sourceCity === destinationCity) {
         cityError.style.display = "block";
         searchFlightButton.disabled = true;
@@ -90,8 +76,6 @@
         searchFlightButton.disabled = false;
       }
     }
-
-    // Initial check for city error on page load
     checkCityError();
   </script>
 </body>
