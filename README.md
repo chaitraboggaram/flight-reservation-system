@@ -1,9 +1,8 @@
-# React Project: Flight booking System Web Application
-
-This project has been developed online using codesandbox.io
+# Bon Voyage: Flight booking System Web Application
+![Alt text](A715EF6B-754C-41A9-B6A8-CACFC4C76BDC_1_201_a.jpeg)
+This project has been developed using Java Spring boot and ReactJS
 
 ## Node/NPM Versions
-
 I'm running node v12.0.0 and npm v7.19.0 as I tinker, there's no plan to
 support older versions at the moment.
 
@@ -28,7 +27,7 @@ In case of any errors
 Landing page is home.jsx, add all routes in it
 
 
-Creating google authentication
+# Creating google authentication
 1. Login to https://console.cloud.google.com/
 2. Go to APIs & Services, click on Credentials in the left pane
 3. Click on create credentials, select OAuth Client ID request
