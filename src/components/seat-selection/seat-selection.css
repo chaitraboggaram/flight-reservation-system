@@ -1,0 +1,49 @@
+/* SeatSelection.css */
+
+.seat-selection-container {
+    text-align: center;
+    margin: 20px;
+}
+
+.seat-grid {
+    display: grid;
+    gap: 10px;
+}
+
+.seat-row {
+    display: flex;
+    justify-content: space-around;
+}
+
+.seat {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.selected {
+    background-color: #4caf50;
+    color: #fff;
+}
+
+.selected-seats {
+    margin-top: 20px;
+}
+
+.first-class {
+    background-color: #3498db;
+    color: #fff;
+}
+
+.business-class {
+    background-color: #f39c12;
+    color: #fff;
+}
+
+.economy-class {
+    background-color: #ecf0f1;
+}

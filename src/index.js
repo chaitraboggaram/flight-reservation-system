@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom";
-
-import { createStore, applyMiddleware, compose } from "redux";
-import { Provider } from "react-redux";
+import { BrowserRouter as Router } from 'react-router-dom';
+import {createStore, applyMiddleware, compose} from "redux";
+import {Provider} from "react-redux";
 import createSagaMiddleware from "redux-saga";
 
 import Home from "./modules/home/home";
@@ -15,8 +15,10 @@ sagaMiddleWare.run(rootSaga);
 
 const rootElement = document.getElementById("root");
 ReactDOM.render(
-  <Provider store={store}>
-    <Home />
-  </Provider>,
-  rootElement
+    <Provider store={store}>
+        <Router>
+            <Home/>
+        </Router>
+    </Provider>,
+    rootElement
 );

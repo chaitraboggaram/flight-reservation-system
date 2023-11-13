@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React, {lazy, Suspense, useState} from "react";
 
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Grid, CssBaseline, Container, Toolbar } from "@material-ui/core";
@@ -13,13 +13,30 @@ const FlightSearch = lazy(() => import("../search/flight-search"));
 const FlightBooking = lazy(() => import("../booking/flight-booking"));
 const GoogleAuth = lazy(() => import("./googleauth"));
 const Payment = lazy(() => import("../booking/payment"));
+const FlightSeatSelection = lazy(() => import("../../components/flight-seat-selection/flight-seat-selection"));
+const SeatSelection = lazy(() => import("../../components/seat-selection/seat-selection"));
 
 const Home = () => {
+  const [tabs, setTabs] = useState([
+    { label: 'Home', path: '/', show: true },
+    { label: 'Manage', path: '/manage', show: true },
+    { label: 'About', path: '/about', show: true },
+    { label: 'Admin', path: '/admin', show: false },
+
+    // Add more tabs as needed
+  ]);
+
+  const handleShowTab = (tabIndex) => {
+    const updatedTabs = [...tabs];
+    updatedTabs[tabIndex] = { ...updatedTabs[tabIndex], show: true };
+    setTabs(updatedTabs);
+  };
+
   return (
     <div className="root">
       <CssBaseline />
       <Router>
-        <Header />
+        <Header tabs={tabs} onShowTab={handleShowTab}/>
         <Toolbar />
         <Container>
           <Grid container styles={{ marginTop: 100 }}>
@@ -52,6 +69,16 @@ const Home = () => {
                       exact={true}
                       path={`/confirmation`}
                       component={Confirmation}
+                    />
+                    <Route
+                        exact={true}
+                        path={`/flight-seat-selection`}
+                        component={FlightSeatSelection}
+                    />
+                    <Route
+                        exact={true}
+                        path={`/seat-selection`}
+                        component={SeatSelection}
                     />
                   </Switch>
                 </Suspense>
