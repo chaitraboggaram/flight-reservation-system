@@ -3,8 +3,23 @@ import React from "react";
 import { AppBar, Tabs, Tab, Typography, Toolbar, Button } from "@material-ui/core";
 import { Link, useLocation } from 'react-router-dom';
 import "./header.css";
+import { useGoogleLogin } from '@react-oauth/google';
+
+import {GOOGLE_USER_INFO_URL} from "../../constants";
+import GoogleServiceSingleton from "../../services/googleServiceSingleton";
+
 
 const Header = ({ tabs, onShowTab }) => {
+    const login = useGoogleLogin({
+        onSuccess: tokenResponse => {
+            GoogleServiceSingleton.getUserInfo(tokenResponse.access_token).then(userInfo => {
+                console.log("Name: ", userInfo.name);
+                console.log("Email: ", userInfo.email);
+                // userInfo.picture has profile pic link
+            });
+        },
+    });
+
     const toolbarStyle = {
         backgroundColor: 'black', // Set your desired color here
     };
@@ -41,7 +56,7 @@ const Header = ({ tabs, onShowTab }) => {
                   return null;
               })}
           </Tabs>
-          <Button color="inherit">Login/Sign Up</Button>
+          <Button color="inherit" onClick={() => login()}>Login/Sign Up</Button>
       </Toolbar>
     </AppBar>
   );

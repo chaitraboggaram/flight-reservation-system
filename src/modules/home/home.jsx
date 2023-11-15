@@ -11,7 +11,6 @@ const Dashboard = lazy(() => import("./dashboard"));
 const Confirmation = lazy(() => import("../confirmation/confirmation"));
 const FlightSearch = lazy(() => import("../search/flight-search"));
 const FlightBooking = lazy(() => import("../booking/flight-booking"));
-const GoogleAuth = lazy(() => import("./googleauth"));
 const Payment = lazy(() => import("../booking/payment"));
 const FlightSeatSelection = lazy(() => import("../../components/flight-seat-selection/flight-seat-selection"));
 const SeatSelection = lazy(() => import("../../components/seat-selection/seat-selection"));
@@ -59,11 +58,6 @@ const Home = () => {
                       exact={true}
                       path={`/payment`}
                       component={Payment}
-                    />
-                    <Route
-                      exact={true}
-                      path={`/authentication`}
-                      component={GoogleAuth}
                     />
                     <Route
                       exact={true}
