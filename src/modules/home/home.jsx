@@ -14,6 +14,7 @@ const FlightBooking = lazy(() => import("../booking/flight-booking"));
 const Payment = lazy(() => import("../booking/payment"));
 const FlightSeatSelection = lazy(() => import("../../components/flight-seat-selection/flight-seat-selection"));
 const SeatSelection = lazy(() => import("../../components/seat-selection/seat-selection"));
+const ManageBooking = lazy(() => import("../../modules/manage/manage"));
 
 const Home = () => {
   const [tabs, setTabs] = useState([
@@ -53,6 +54,11 @@ const Home = () => {
                       exact={true}
                       path={`/flight-booking`}
                       component={FlightBooking}
+                    />
+                    <Route
+                      exact={true}
+                      path={`/manage`}
+                      component={ManageBooking}
                     />
                     <Route
                       exact={true}
