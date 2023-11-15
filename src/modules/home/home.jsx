@@ -17,7 +17,7 @@ const SeatSelection = lazy(() => import("../../components/seat-selection/seat-se
 
 const Home = () => {
   const [tabs, setTabs] = useState([
-    { label: 'Home', path: '/', show: true },
+    { label: 'Book', path: '/', show: true },
     { label: 'Manage', path: '/manage', show: true },
     { label: 'About', path: '/about', show: true },
     { label: 'Admin', path: '/admin', show: false },
