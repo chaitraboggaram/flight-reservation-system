@@ -13,16 +13,16 @@ support older versions at the moment.
 Clone down this repository. You will need `node` and `npm` installed globally on your machine.
 
 ### Installation:
+Install npm modules:
+`npm install`
+
 To Start Server:
 `npm start`
 
 To Visit App:
 `localhost:3000`
 
-Install google login for react
-`npm install react-google-login`
-
-In case of any errors
+In case of any errors (ensure the number of vulnerabilities is less than 10 - sometimes running twice helps!)
 `npm audit fix --force`
 
 Landing page is home.jsx, add all routes in it

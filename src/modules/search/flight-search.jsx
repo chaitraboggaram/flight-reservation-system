@@ -15,7 +15,7 @@ import {
 } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 
-import { validateSearch } from "../../utils/global-services";
+import { validateSearch } from "../../services/global-services";
 import actions from "../../constants/actions";
 import FlightListOneWay from "../../components/flight-list-grid/flight-list-one-way";
 

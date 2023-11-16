@@ -1,4 +1,5 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
+import { useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -17,7 +18,9 @@ import {
   TableRow
 } from "@material-ui/core";
 
-import { thousandSeparator } from "../../utils/global-services";
+import { thousandSeparator } from "../../services/global-services";
+import { useGoogleLogin } from "@react-oauth/google";
+import GoogleServiceSingleton from "../../services/google-service-singleton";
 
 const useStyles = makeStyles(() => ({
   textAlign: {
@@ -34,9 +37,22 @@ const useStyles = makeStyles(() => ({
 const FlightListOneWay = (props) => {
   const { flightList, bookNow } = props;
   const classes = useStyles();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [loginDone, setLoginDone] = useState(false);
+  const history = useHistory();
   let component = null;
+
+  const login = useGoogleLogin({
+    onSuccess: tokenResponse => {
+      GoogleServiceSingleton.getUserInfo(tokenResponse.access_token).then(userInfo => {
+        console.log("Name: ", userInfo.name);
+        console.log("Email: ", userInfo.email);
+        setLoginDone(true);
+        // userInfo.picture has profile pic link
+      });
+    },
+  });
 
   /**
    * @function handleChangePage
@@ -57,6 +73,11 @@ const FlightListOneWay = (props) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  const handleFlightSelection = (event) => {
+    login();
+  };
+
 
   if (flightList?.loading) {
     component = <CircularProgress />;
@@ -109,7 +130,8 @@ const FlightListOneWay = (props) => {
                             <Button
                               variant="contained"
                               color="primary"
-                              onClick={() => bookNow(val)}
+                              // onClick={() => bookNow(val)}
+                              onClick={handleFlightSelection}
                             >{`Rs. ${thousandSeparator(val?.price)}`}</Button>
                           </Grid>
                         </Grid>
@@ -136,6 +158,12 @@ const FlightListOneWay = (props) => {
   } else if (flightList?.error) {
     component = <Typography>{`Unable to fetch Data...`}</Typography>;
   }
+
+  useEffect(() => {
+    if (loginDone) {
+      history.push("/seat-selection");
+    }
+  }, [loginDone, history]);
 
   return (
     <Grid container>

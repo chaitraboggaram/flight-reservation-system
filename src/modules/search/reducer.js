@@ -26,7 +26,7 @@ const searchList = (state = defaultState, action) => {
       return Object.assign({}, state, {
         loading: true,
         result: null,
-        error: null
+        error: null,
       });
     default:
       return state;

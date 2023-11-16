@@ -7,12 +7,11 @@ import "../../styles.css";
 
 import Header from "../../components/header/header";
 import ErrorBoundaries from "../../components/error-boundaries/error-boundaries";
-const Dashboard = lazy(() => import("./dashboard"));
+// const Dashboard = lazy(() => import("./dashboard"));
 const Confirmation = lazy(() => import("../confirmation/confirmation"));
 const FlightSearch = lazy(() => import("../search/flight-search"));
 const FlightBooking = lazy(() => import("../booking/flight-booking"));
 const Payment = lazy(() => import("../booking/payment"));
-const FlightSeatSelection = lazy(() => import("../../components/flight-seat-selection/flight-seat-selection"));
 const SeatSelection = lazy(() => import("../../components/seat-selection/seat-selection"));
 const ManageBooking = lazy(() => import("../../modules/manage/manage"));
 
@@ -69,11 +68,6 @@ const Home = () => {
                       exact={true}
                       path={`/confirmation`}
                       component={Confirmation}
-                    />
-                    <Route
-                        exact={true}
-                        path={`/flight-seat-selection`}
-                        component={FlightSeatSelection}
                     />
                     <Route
                         exact={true}

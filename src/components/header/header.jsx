@@ -5,8 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 import "./header.css";
 import { useGoogleLogin } from '@react-oauth/google';
 
-import {GOOGLE_USER_INFO_URL} from "../../constants";
-import GoogleServiceSingleton from "../../services/googleServiceSingleton";
+import GoogleServiceSingleton from "../../services/google-service-singleton";
 
 
 const Header = ({ tabs, onShowTab }) => {
