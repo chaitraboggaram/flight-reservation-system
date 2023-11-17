@@ -14,12 +14,15 @@ const FlightBooking = lazy(() => import("../booking/flight-booking"));
 const Payment = lazy(() => import("../booking/payment"));
 const SeatSelection = lazy(() => import("../../components/seat-selection/seat-selection"));
 const ManageBooking = lazy(() => import("../../modules/manage/manage"));
+const About = lazy(() => import("../../modules/about/about"));
+const Help = lazy(() => import("../../modules/help/help"));
 
 const Home = () => {
   const [tabs, setTabs] = useState([
     { label: 'Book', path: '/', show: true },
     { label: 'Manage', path: '/manage', show: true },
     { label: 'About', path: '/about', show: true },
+    { label: 'Help', path: '/help', show: true },
     { label: 'Admin', path: '/admin', show: false },
 
     // Add more tabs as needed
@@ -58,6 +61,16 @@ const Home = () => {
                       exact={true}
                       path={`/manage`}
                       component={ManageBooking}
+                    />
+                    <Route
+                      exact={true}
+                      path={`/about`}
+                      component={About}
+                    />
+                    <Route
+                      exact={true}
+                      path={`/help`}
+                      component={Help}
                     />
                     <Route
                       exact={true}
