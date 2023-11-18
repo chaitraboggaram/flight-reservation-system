@@ -104,7 +104,7 @@ const FlightBooking = () => {
   return (
     <Grid container>
       <Grid item xs={12} className={classes.filterContainer}>
-        <Typography variant="h6">{`Booking Confirmation for Flight ${bookingData?.result?.airlineName} (${bookingData?.result?.flightNbr})`}</Typography>
+        <Typography variant="h6">{`Booking Confirmation for Flight ${bookingData?.result?.airlineName} (${bookingData?.result?.flightNumber})`}</Typography>
       </Grid>
       <Grid item xs={12} md={6} className={classes.filterContainer}>
         <TextField
