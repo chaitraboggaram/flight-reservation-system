@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
+import { Button } from "@material-ui/core";
+
+import CustomAlert from '../../components/custom-alert'; // Import the custom alert component
+
 import './payment.css';
 
 function Payment() {
+  const history = useHistory();
   const [cardNumber, setCardNumber] = useState('');
   const [expiry, setExpiry] = useState('');
   const [cvv, setCVV] = useState('');
@@ -11,39 +16,38 @@ function Payment() {
   const [nameError, setNameError] = useState('');
   const [cvvError, setCVVError] = useState('');
   const [expiryError, setExpiryError] = useState('');
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   const location = useLocation();
   const { selectedSeat, amountToBePaid } = location.state || {};
 
   const handlePayment = (event) => {
-    // Regular expressions for validation
-    const cardNumberPattern = /^\d{16}$/; // Validate 16-digit card number
-    const namePattern = /^[A-Za-z\s]+$/; // Allow only alphabetic characters and spaces
-    const cvvPattern = /^\d{3}$/; // Validate 3-digit CVV
-    const expiryPattern = /^(0[1-9]|1[0-2])\/\d{2}$/; // Validate MM/YY format
+    event.preventDefault();
 
-    // Card number validation
+    const cardNumberPattern = /^\d{16}$/;
+    const namePattern = /^[A-Za-z\s]+$/;
+    const cvvPattern = /^\d{3}$/;
+    const expiryPattern = /^(0[1-9]|1[0-2])\/\d{2}$/;
+    const sanitizedCardNumber = cardNumber.replace(/\s/g, '');
+
     let cardNumberError = '';
-    if (!cardNumberPattern.test(cardNumber)) {
+    if (!cardNumberPattern.test(sanitizedCardNumber)) {
       cardNumberError = 'Invalid card number';
     }
 
-    // Name validation
     let nameError = '';
     if (!namePattern.test(name)) {
       nameError = 'Invalid name';
     }
 
-    // CVV validation
     let cvvError = '';
     if (!cvvPattern.test(cvv)) {
       cvvError = 'Invalid CVV';
     }
 
-    // Expiry validation
     const currentDate = new Date();
-    const currentYear = currentDate.getFullYear() % 100; // Get last two digits of the year
-    const currentMonth = currentDate.getMonth() + 1; // Months are zero-based
+    const currentYear = currentDate.getFullYear() % 100;
+    const currentMonth = currentDate.getMonth() + 1;
 
     const [inputMonth, inputYear] = expiry.split('/');
 
@@ -54,25 +58,28 @@ function Payment() {
       expiryError = 'Expiry date must be in the future';
     }
 
-    // Set the error states
     setCardNumberError(cardNumberError);
     setNameError(nameError);
     setCVVError(cvvError);
     setExpiryError(expiryError);
 
-    // Check for errors
     if (cardNumberError || nameError || cvvError || expiryError) {
-      // Prevent form submission
-      event.preventDefault();
+      setPaymentSuccess(false);
       return false;
     }
 
-    // Perform further processing or API calls for the payment
-    alert('Payment successful!');
+    setPaymentSuccess(true);
     return true;
   };
 
-  // Error messages to display next to input fields
+  const handleAlertClose = () => {
+    setPaymentSuccess(false);
+    if (paymentSuccess) {
+      // Redirect to the manage page
+      history.push('/manage'); // Adjust the path as needed
+    }
+  };
+
   const cardNumberErrorMessage = cardNumberError ? <div className="error-message" style={{ color: 'red' }}>{cardNumberError}</div> : null;
   const nameErrorMessage = nameError ? <div className="error-message" style={{ color: 'red' }}>{nameError}</div> : null;
   const cvvErrorMessage = cvvError ? <div className="error-message" style={{ color: 'red' }}>{cvvError}</div> : null;
@@ -128,7 +135,10 @@ function Payment() {
                                 placeholder=" "
                                 value={cardNumber}
                                 onChange={(e) => {
-                                  setCardNumber(e.target.value);
+                                  const inputValue = e.target.value;
+                                  const sanitizedInput = inputValue.replace(/\D/g, '').substring(0, 16);
+                                  const formattedInput = sanitizedInput.replace(/(\d{4})/g, '$1 ').trim();
+                                  setCardNumber(formattedInput);
                                   setCardNumberError('');
                                 }}
                               />
@@ -147,8 +157,18 @@ function Payment() {
                                 placeholder=" "
                                 value={expiry}
                                 onChange={(e) => {
-                                  setExpiry(e.target.value);
-                                  setExpiryError('');
+                                  const inputValue = e.target.value;
+                                  const sanitizedInput = inputValue.replace(/\D/g, '').substring(0, 4);
+                                  const formattedInput = sanitizedInput.replace(/(\d{2})(\d{0,2})/, '$1/$2');
+                                  const [inputMonth, inputYear] = formattedInput.split('/');
+                                  const isValidMonth = inputMonth >= '01' && inputMonth <= '12';
+                                  const isValidYear = inputYear >= '23' && inputYear <= '28';
+                                  setExpiry(formattedInput);
+                                  setExpiryError(
+                                    !isValidMonth || !isValidYear
+                                      ? 'Invalid expiry date (MM / YY)'
+                                      : ''
+                                  );
                                 }}
                               />
                               <label htmlFor="" className="form__label">
@@ -166,8 +186,14 @@ function Payment() {
                                 placeholder=" "
                                 value={cvv}
                                 onChange={(e) => {
-                                  setCVV(e.target.value);
-                                  setCVVError('');
+                                  const inputValue = e.target.value;
+                                  const sanitizedInput = inputValue.replace(/\D/g, '').substring(0, 3);
+                                  setCVV(sanitizedInput);
+                                  setCVVError(
+                                    sanitizedInput.length !== 3
+                                      ? 'CVV must be a 3-digit number'
+                                      : ''
+                                  );
                                 }}
                               />
                               <label htmlFor="" className="form__label">
@@ -197,9 +223,29 @@ function Payment() {
                           </div>
 
                           <div className="col-12">
-                            <button className="btn btn-primary w-100" onClick={handlePayment}>
-                              Submit
-                            </button>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <Button
+                                style={{ backgroundColor: '#000', color: '#fff', flex: 1, marginRight: '5px' }}
+                                onClick={handlePayment}
+                              >
+                                Confirm Payment
+                              </Button>
+                              <Button
+                                style={{ backgroundColor: '#ccc', color: '#000', flex: 1, marginLeft: '5px' }}
+                                onClick={() => {
+                                  setCardNumber('');
+                                  setExpiry('');
+                                  setCVV('');
+                                  setName('');
+                                  setCardNumberError('');
+                                  setNameError('');
+                                  setCVVError('');
+                                  setExpiryError('');
+                                }}
+                              >
+                                Clear Selection
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </form>
@@ -211,6 +257,13 @@ function Payment() {
           </div>
         </div>
       </div>
+
+      <CustomAlert
+        title="Payment Successful"
+        message="Your payment was successful!"
+        open={paymentSuccess}
+        onClose={handleAlertClose}
+      />
     </div>
   );
 }

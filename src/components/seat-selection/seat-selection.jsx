@@ -8,13 +8,11 @@ const SeatSelection = () => {
     const [selectedSeat, setSelectedSeat] = useState(null);
     const [selectPayment, setSelectPayment] = useState(false);
     const [openModal, setOpenModal] = useState(false);
-    const [amountToBePaid, setAmountToBePaid] = useState(0); // Initialize with your default amount
+    const [amountToBePaid, setAmountToBePaid] = useState(0);
     const history = useHistory();
 
-    // Define booked seats
     const bookedSeats = ['B2', 'E5', 'F3'];
 
-    // Example seatLayout, modify based on your actual seat arrangement
     const seatLayout = [
         { class: 'Business Class', seats: ['B1', 'B2', 'B3', 'B4'] },
         { class: 'First Class', seats: ['F1', 'F2', 'F3', 'F4'] },
@@ -53,7 +51,7 @@ const SeatSelection = () => {
 
     useEffect(() => {
         if (selectPayment) {
-            history.push("/payment", { selectedSeat, amountToBePaid }); // Pass the state as an object
+            history.push("/payment", { selectedSeat, amountToBePaid }); 
         }
     }, [selectPayment, history, selectedSeat, amountToBePaid]);
 

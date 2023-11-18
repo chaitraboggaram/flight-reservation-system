@@ -7,8 +7,8 @@ const CustomAlert = ({ title, message, open, onClose }) => {
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle style={{ textAlign: 'center', background: 'black', color: 'white', padding: '10px 0' }}>
-        <ErrorOutline style={{ fontSize: '2rem', verticalAlign: 'middle', marginRight: '5px' }} />
-        {title}
+        <ErrorOutline style={{ fontSize: '2rem', verticalAlign: 'middle', marginRight: '5px', color: 'white' }} />
+        <span style={{ color: 'white' }}>{title}</span>
       </DialogTitle>
       <DialogContent style={{ background: 'white', padding: '20px' }}>
         <DialogContentText style={{ fontSize: '16px', textAlign: 'center' }}>
