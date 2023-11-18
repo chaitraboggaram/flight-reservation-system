@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import RadioGroup from "@material-ui/core/RadioGroup";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import { makeStyles } from "@material-ui/core/styles";
@@ -9,8 +10,8 @@ import {
   Button,
   Radio,
   FormControlLabel,
-  RadioGroup,
   Typography,
+  Paper,
 } from "@material-ui/core";
 
 import { Autocomplete } from "@material-ui/lab";
@@ -21,11 +22,37 @@ import CityJSON from "../../mocks/cities.json";
 
 const cities = [...CityJSON];
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   filterContainer: {
-    marginBottom: 25,
+    padding: theme.spacing(),
+    margin: "auto",
+    maxWidth: 600,
+    background: "rgba(0, 0, 0, 0.87)",
+    borderRadius: 8,
+  },
+  
+  centerContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: theme.spacing(5),
+    width: "100%",
+  },
+  inputContainer: {
+    marginBottom: theme.spacing(2),
+  },
+  centerButton: {
+    display: "flex",
+    justifyContent: "center",
+  },
+  paper: {
+    padding: theme.spacing(5),
+    margin: "auto",
+    maxWidth: 800,
   },
 }));
+
 
 const FlightSearch = (props) => {
   const [source, setSource] = useState(null);
@@ -48,45 +75,26 @@ const FlightSearch = (props) => {
     });
   }, []);
 
-  /**
-   * @function handleSelectTrip
-   * @param {object} e
-   * @description get selected trip one way or round
-   */
   const handleSelectTrip = (e) => {
     setSelectTrip(e.target.value);
   };
 
-  /**
-   * @function handleDeparture
-   * @param {object} e
-   * @description get departure time
-   */
   const handleDeparture = (e) => {
     setDeptDate(e.target.value);
   };
 
-  /**
-   * @function handleReturn
-   * @param {object} e
-   * @description get return date
-   */
   const handleReturn = (e) => {
     setReturnDate(e.target.value);
   };
 
-  /**
-   * @function handleSearchFlight
-   * @description Search Flight
-   */
   const handleSearchFlight = () => {
-    const payload = {};
-
-    payload.source = source?.name;
-    payload.destination = dest?.name;
-    payload.deptDate = deptDate;
-    payload.returnDate = returnDate;
-    payload.tripType = selectTrip;
+    const payload = {
+      source: source?.name,
+      destination: dest?.name,
+      deptDate: deptDate,
+      returnDate: returnDate,
+      tripType: selectTrip,
+    };
 
     if (
       payload?.source?.toLowerCase() === payload?.destination?.toLowerCase()
@@ -97,11 +105,11 @@ const FlightSearch = (props) => {
     } else {
       setCityError(false);
     }
-    // Reset Flight List
+
     dispatch({
       type: actions.RESET_FLIGHT_LIST,
     });
-    // Get flight List
+
     dispatch({
       type: actions.GET_FLIGHT_LIST,
       payload,
@@ -110,11 +118,6 @@ const FlightSearch = (props) => {
     setSearchDone(true);
   };
 
-  /**
-   * @function handleBookNow
-   * @param {object} bookingVal
-   * @description book now
-   */
   const handleBookNow = (bookingVal) => {
     let timer;
     dispatch({
@@ -129,17 +132,14 @@ const FlightSearch = (props) => {
     }, 100);
   };
 
-  // Filter destination options based on selected source
   const filteredDestinations = cities.filter(
     (city) => !source || city.name !== source.name
   );
 
-  // Filter source options based on selected destination
   const filteredSources = cities.filter(
     (city) => !dest || city.name !== dest.name
   );
 
-  // Get the current date in the format "YYYY-MM-DD"
   const getCurrentDate = () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -149,22 +149,20 @@ const FlightSearch = (props) => {
   };
 
   return (
-    <Grid container>
-      <Grid item xs={12} md={12} className={classes.filterContainer}>
+    <Paper elevation={0} className={classes.paper}>
+      <Grid container className={classes.centerContainer}>
         <RadioGroup row onChange={handleSelectTrip} value={selectTrip}>
           <FormControlLabel
             value="one"
-            control={<Radio color="primary" />}
+            control={<Radio style={{ color: "black" }} />}
             label="One Way"
           />
           <FormControlLabel
             value="both"
-            control={<Radio color="primary" />}
+            control={<Radio style={{ color: "black" }} />}
             label="Round Trip"
           />
         </RadioGroup>
-      </Grid>
-      <Grid item xs={12} md={6} className={classes.filterContainer}>
         <Autocomplete
           value={source}
           onChange={(event, newValue) => {
@@ -172,13 +170,11 @@ const FlightSearch = (props) => {
           }}
           getOptionLabel={(option) => option.name}
           options={filteredSources}
-          style={{ width: 300 }}
+          style={{ width: 300, padding: "8px" }}
           renderInput={(params) => (
             <TextField {...params} label="Source City" variant="outlined" />
           )}
         />
-      </Grid>
-      <Grid item xs={12} md={6} className={classes.filterContainer}>
         <Autocomplete
           value={dest}
           onChange={(event, newValue) => {
@@ -186,57 +182,45 @@ const FlightSearch = (props) => {
           }}
           getOptionLabel={(option) => option.name}
           options={filteredDestinations}
-          style={{ width: 300 }}
+          style={{ width: 300, padding: "8px" }}
           renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Destination City"
-              variant="outlined"
-            />
+            <TextField {...params} label="Destination City" variant="outlined" />
           )}
         />
-      </Grid>
-      <Grid item xs={12} md={6} className={classes.filterContainer}>
         <TextField
           label="Journey Date"
           type="date"
           value={deptDate}
           onChange={handleDeparture}
           variant="outlined"
-          style={{ width: 300 }}
+          style={{ width: 300, padding: "8px" }}
           InputLabelProps={{
             shrink: true,
           }}
-          // Set the minimum selectable date to the current date
           inputProps={{
             min: getCurrentDate(),
           }}
         />
-      </Grid>
-      {selectTrip?.toUpperCase() === "BOTH" && (
-        <Grid item xs={12} md={6} className={classes.filterContainer}>
+        {selectTrip?.toUpperCase() === "BOTH" && (
           <TextField
             label="Return Date"
             type="date"
             value={returnDate}
             onChange={handleReturn}
             variant="outlined"
-            style={{ width: 300 }}
+            style={{ width: 300, padding: "8px" }}
             InputLabelProps={{
               shrink: true,
             }}
-            // Set the minimum selectable date to the Journey Date
             inputProps={{
               min: deptDate,
             }}
           />
-        </Grid>
-      )}
-      <Grid item xs={12}>
+        )}
         <Button
           variant="contained"
-          color="primary"
-          className={classes.filterContainer}
+          style={{ backgroundColor: "black", color: "white" }}
+          className={`${classes.filterContainer} ${classes.centerButton}`}
           onClick={handleSearchFlight}
           disabled={validateSearch(
             source,
@@ -248,19 +232,16 @@ const FlightSearch = (props) => {
         >
           {`Search Flight`}
         </Button>
-      </Grid>
-      <Grid item xs={12}>
         {cityError && (
-          <Typography
-            variant="body1"
-            color="error"
-          >{`Source and Destination City can not be the same`}</Typography>
+          <Typography variant="body1" color="error">
+            {`Source and Destination City cannot be the same`}
+          </Typography>
         )}
         {searchDone && (
           <FlightListOneWay flightList={flightList} bookNow={handleBookNow} />
         )}
       </Grid>
-    </Grid>
+    </Paper>
   );
 };
 
