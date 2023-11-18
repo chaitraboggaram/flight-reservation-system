@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router';
 import './payment.css';
 
 function Payment() {
@@ -11,71 +12,104 @@ function Payment() {
   const [cvvError, setCVVError] = useState('');
   const [expiryError, setExpiryError] = useState('');
 
+  const location = useLocation();
+  const { selectedSeat, amountToBePaid } = location.state || {};
+
   const handlePayment = (event) => {
     // Regular expressions for validation
     const cardNumberPattern = /^\d{16}$/; // Validate 16-digit card number
     const namePattern = /^[A-Za-z\s]+$/; // Allow only alphabetic characters and spaces
     const cvvPattern = /^\d{3}$/; // Validate 3-digit CVV
     const expiryPattern = /^(0[1-9]|1[0-2])\/\d{2}$/; // Validate MM/YY format
-  
+
     // Card number validation
     let cardNumberError = '';
     if (!cardNumberPattern.test(cardNumber)) {
       cardNumberError = 'Invalid card number';
     }
-  
+
     // Name validation
     let nameError = '';
     if (!namePattern.test(name)) {
       nameError = 'Invalid name';
     }
-  
+
     // CVV validation
     let cvvError = '';
     if (!cvvPattern.test(cvv)) {
       cvvError = 'Invalid CVV';
     }
-  
+
     // Expiry validation
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear() % 100; // Get last two digits of the year
     const currentMonth = currentDate.getMonth() + 1; // Months are zero-based
-  
+
     const [inputMonth, inputYear] = expiry.split('/');
-  
+
     let expiryError = '';
     if (!expiryPattern.test(expiry)) {
       expiryError = 'Invalid expiry date (MM/YY)';
     } else if (inputYear < currentYear || (inputYear === currentYear && inputMonth < currentMonth)) {
       expiryError = 'Expiry date must be in the future';
     }
-  
+
     // Set the error states
     setCardNumberError(cardNumberError);
     setNameError(nameError);
     setCVVError(cvvError);
     setExpiryError(expiryError);
-  
+
     // Check for errors
     if (cardNumberError || nameError || cvvError || expiryError) {
       // Prevent form submission
       event.preventDefault();
       return false;
     }
-  
+
     // Perform further processing or API calls for the payment
     alert('Payment successful!');
     return true;
   };
-  
+
   // Error messages to display next to input fields
   const cardNumberErrorMessage = cardNumberError ? <div className="error-message" style={{ color: 'red' }}>{cardNumberError}</div> : null;
   const nameErrorMessage = nameError ? <div className="error-message" style={{ color: 'red' }}>{nameError}</div> : null;
   const cvvErrorMessage = cvvError ? <div className="error-message" style={{ color: 'red' }}>{cvvError}</div> : null;
   const expiryErrorMessage = expiryError ? <div className="error-message" style={{ color: 'red' }}>{expiryError}</div> : null;
-  
+
   return (
     <div>
+      <div className="flight-details-container">
+        <h2>Booking Summary</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Flight</td>
+              <td>ABC Airlines - Flight 123</td>
+            </tr>
+            <tr>
+              <td>Seat</td>
+              <td>{selectedSeat || 'None'}</td>
+            </tr>
+            <tr>
+              <td>Departure</td>
+              <td>November 25, 2023, 10:00 AM</td>
+            </tr>
+            <tr>
+              <td>Amount</td>
+              <td>₹{amountToBePaid}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <div className="container">
         <div className="row">
           <div className="col-12">

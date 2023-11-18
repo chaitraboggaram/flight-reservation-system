@@ -129,7 +129,7 @@ const FlightListOneWay = (props) => {
                           <Grid item xs={4} className={classes.textAlign}>
                             <Button
                               variant="contained"
-                              color="primary"
+                              style={{ backgroundColor: "black", color: "white" }}
                               // onClick={() => bookNow(val)}
                               onClick={handleFlightSelection}
                             >{`Rs. ${thousandSeparator(val?.price)}`}</Button>

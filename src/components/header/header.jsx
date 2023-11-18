@@ -55,7 +55,7 @@ const Header = ({ tabs, onShowTab }) => {
                   return null;
               })}
           </Tabs>
-          <Button color="inherit" onClick={() => login()}>Login/Sign Up</Button>
+          <Button style={{ backgroundColor: "black", color: "white" }} onClick={() => login()}>Login/Sign Up</Button>
       </Toolbar>
     </AppBar>
   );

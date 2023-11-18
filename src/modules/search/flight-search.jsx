@@ -50,6 +50,8 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(5),
     margin: "auto",
     maxWidth: 800,
+    background: "none", // Set background to none
+    boxShadow: "none", // Remove box shadow
   },
 }));
 
@@ -219,7 +221,11 @@ const FlightSearch = (props) => {
         )}
         <Button
           variant="contained"
-          style={{ backgroundColor: "black", color: "white" }}
+          style={{
+            backgroundColor: "black",
+            color: "white",
+            borderRadius: 4,
+          }}
           className={`${classes.filterContainer} ${classes.centerButton}`}
           onClick={handleSearchFlight}
           disabled={validateSearch(
@@ -232,6 +238,7 @@ const FlightSearch = (props) => {
         >
           {`Search Flight`}
         </Button>
+
         {cityError && (
           <Typography variant="body1" color="error">
             {`Source and Destination City cannot be the same`}

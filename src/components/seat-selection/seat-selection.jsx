@@ -8,29 +8,13 @@ const SeatSelection = () => {
     const [selectedSeat, setSelectedSeat] = useState(null);
     const [selectPayment, setSelectPayment] = useState(false);
     const [openModal, setOpenModal] = useState(false);
+    const [amountToBePaid, setAmountToBePaid] = useState(0); // Initialize with your default amount
     const history = useHistory();
 
     // Define booked seats
     const bookedSeats = ['B2', 'E5', 'F3'];
 
-    const handleSeatClick = (seatNumber) => {
-        setSelectedSeat((prevSeat) => (prevSeat === seatNumber ? null : seatNumber));
-    };
-
-    const handlePayment = () => {
-        if (selectedSeat && !bookedSeats.includes(selectedSeat)) {
-            setSelectPayment(true);
-        } else {
-            setOpenModal(true);
-        }
-    };
-
-    const handleModalClose = () => {
-        setOpenModal(false);
-    };
-
-    const isSeatBooked = (seat) => bookedSeats.includes(seat);
-
+    // Example seatLayout, modify based on your actual seat arrangement
     const seatLayout = [
         { class: 'Business Class', seats: ['B1', 'B2', 'B3', 'B4'] },
         { class: 'First Class', seats: ['F1', 'F2', 'F3', 'F4'] },
@@ -46,11 +30,32 @@ const SeatSelection = () => {
         }
     ];
 
+    const handleSeatClick = (seatNumber) => {
+        setSelectedSeat((prevSeat) => (prevSeat === seatNumber ? null : seatNumber));
+    };
+
+    const handlePayment = () => {
+        if (selectedSeat && !bookedSeats.includes(selectedSeat)) {
+            const calculatedAmount = 7000; 
+            setAmountToBePaid(calculatedAmount);
+
+            setSelectPayment(true);
+        } else {
+            setOpenModal(true);
+        }
+    };
+
+    const handleModalClose = () => {
+        setOpenModal(false);
+    };
+
+    const isSeatBooked = (seat) => bookedSeats.includes(seat);
+
     useEffect(() => {
         if (selectPayment) {
-            history.push("/payment");
+            history.push("/payment", { selectedSeat, amountToBePaid }); // Pass the state as an object
         }
-    }, [selectPayment, history]);
+    }, [selectPayment, history, selectedSeat, amountToBePaid]);
 
     return (
         <div className="seat-selection-container">
@@ -101,7 +106,10 @@ const SeatSelection = () => {
                 </Button>
                 <Button
                     style={{ backgroundColor: '#ccc', color: '#000', marginLeft: '10px' }}
-                    onClick={() => setSelectedSeat(null)}
+                    onClick={() => {
+                        setSelectedSeat(null);
+                        setAmountToBePaid(0);
+                    }}
                 >
                     Clear Selection
                 </Button>
