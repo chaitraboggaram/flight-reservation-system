@@ -41,7 +41,7 @@
 }
 
 .MuiButton-containedPrimary {
-  background-color: #000;
+  background-color: #000 !important;
   color: #fff;
   margin-bottom: 25px;
 }
