@@ -75,11 +75,14 @@ const Header = ({ tabs, onShowTab }) => {
   return (
     <AppBar position="static">
       <Toolbar style={toolbarStyle}>
+      <a href={process.env.PUBLIC_URL + "/BonVoyage.jpeg"} target="_blank" rel="noopener noreferrer">
         <img
-          src={process.env.PUBLIC_URL + "/BonVoyage.jpeg"}
-          alt="Logo"
-          style={{ maxHeight: "50px", marginRight: "10px" }}
+            src={process.env.PUBLIC_URL + "/BonVoyage.jpeg"}
+            alt="Logo"
+            style={{ maxHeight: "50px", marginRight: "10px" }}
         />
+        </a>
+
         <Typography variant="h6" style={{ marginRight: "50px" }}>
           {`BonVoyage`}
         </Typography>

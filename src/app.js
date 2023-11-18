@@ -5,7 +5,7 @@ import GoogleAuth from './GoogleAuth'; // Import the GoogleAuth component
 function App() {
   return (
     <div>
-      <h1>BonVoyage</h1>
+      <title>Bon Voyage</title>
       <GoogleAuth /> {/* Render the GoogleAuth component */}
       {/* Other components and content */}
     </div>

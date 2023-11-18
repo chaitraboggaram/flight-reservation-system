@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
 
@@ -44,13 +44,14 @@ const FlightListOneWay = (props) => {
   let component = null;
 
   const login = useGoogleLogin({
-    onSuccess: tokenResponse => {
-      GoogleServiceSingleton.getUserInfo(tokenResponse.access_token).then(userInfo => {
-        console.log("Name: ", userInfo.name);
-        console.log("Email: ", userInfo.email);
-        setLoginDone(true);
-        // userInfo.picture has profile pic link
-      });
+    onSuccess: (tokenResponse) => {
+      GoogleServiceSingleton.getUserInfo(tokenResponse.access_token).then(
+        (userInfo) => {
+          console.log("Name: ", userInfo.name);
+          console.log("Email: ", userInfo.email);
+          setLoginDone(true);
+        }
+      );
     },
   });
 
@@ -74,10 +75,11 @@ const FlightListOneWay = (props) => {
     setPage(0);
   };
 
-  const handleFlightSelection = (event) => {
-    login();
+  const handleFlightSelection = async (event) => {
+    if (!loginDone) {
+      await login();
+    }
   };
-
 
   if (flightList?.loading) {
     component = <CircularProgress />;
@@ -100,7 +102,11 @@ const FlightListOneWay = (props) => {
                               alt={val.airlineName}
                             />
                           </Grid>
-                          <Grid item xs={2} className={classes.textAlignCenter}>
+                          <Grid
+                            item
+                            xs={2}
+                            className={classes.textAlignCenter}
+                          >
                             <Typography align="center">
                               {val.departureTime}
                             </Typography>
@@ -108,7 +114,11 @@ const FlightListOneWay = (props) => {
                               {val.departure}
                             </Typography>
                           </Grid>
-                          <Grid item xs={2} className={classes.textAlignCenter}>
+                          <Grid
+                            item
+                            xs={2}
+                            className={classes.textAlignCenter}
+                          >
                             <Typography>{val.airlineName}</Typography>
                             <Typography variant="caption">
                               {val.flightNumber}
@@ -120,7 +130,11 @@ const FlightListOneWay = (props) => {
                                 : `${val.noOfStops} Stops`}
                             </Typography>
                           </Grid>
-                          <Grid item xs={2} className={classes.textAlignCenter}>
+                          <Grid
+                            item
+                            xs={2}
+                            className={classes.textAlignCenter}
+                          >
                             <Typography>{val.arrivalTime}</Typography>
                             <Typography variant="caption">
                               {val.arrival}
@@ -130,7 +144,6 @@ const FlightListOneWay = (props) => {
                             <Button
                               variant="contained"
                               style={{ backgroundColor: "black", color: "white" }}
-                              // onClick={() => bookNow(val)}
                               onClick={handleFlightSelection}
                             >{`Rs. ${thousandSeparator(val?.price)}`}</Button>
                           </Grid>
@@ -160,9 +173,12 @@ const FlightListOneWay = (props) => {
   }
 
   useEffect(() => {
-    if (loginDone) {
-      history.push("/seat-selection");
-    }
+    const redirectUser = async () => {
+      if (loginDone) {
+        await history.push("/seat-selection");
+      }
+    };
+    redirectUser();
   }, [loginDone, history]);
 
   return (
@@ -177,7 +193,7 @@ const FlightListOneWay = (props) => {
 FlightListOneWay.propTypes = {
   classes: PropTypes.object,
   flightList: PropTypes.object,
-  bookNow: PropTypes.func
+  bookNow: PropTypes.func,
 };
 
 export default FlightListOneWay;

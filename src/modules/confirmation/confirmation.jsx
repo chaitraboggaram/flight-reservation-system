@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import { useHistory, useLocation } from 'react-router';
+import { useHistory } from "react-router-dom";
 import { Typography, Button } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import "./confirmation.css"; // Import the CSS file
 
 const Confirmation = () => {
   const history = useHistory();
-  const location = useLocation();
 
   // Retrieve user information from the session
   const firstName = sessionStorage.getItem("FirstName");
@@ -22,102 +21,69 @@ const Confirmation = () => {
   const dateOfJourney = "";
   const timeOfJourney = "";
 
-  const useStyles = makeStyles((theme) => ({
-    container: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      height: "100vh",
-    },
-    table: {
-      width: "50%",
-      margin: "20px",
-      borderCollapse: "collapse",
-    },
-    tableRow: {
-      borderBottom: "1px solid #ddd",
-      padding: "10px",
-      textAlign: "left",
-    },
-    tableHeader: {
-      backgroundColor: "#f2f2f2",
-      padding: "10px",
-    },
-    button: {
-      marginTop: theme.spacing(2),
-      fontSize: "1rem",
-      fontWeight: "bold",
-      color: "#fff",
-      backgroundColor: "black", // Set button color to black
-      "&:hover": {
-        backgroundColor: "#333", // Darken the color on hover if needed
-      },
-    },
-  }));
-
-  const classes = useStyles();
-
   return (
-    <div className={classes.container}>
-      <Typography variant="body2" color="textPrimary">
-        Thank you for the Booking. Details are as follows:
+    <div className="confirmation-container">
+      <Typography variant="h5" color="black">
+        Your flight is now set for an unforgettable journey with Bon Voyage Flights. 
       </Typography>
-
-      <table className={classes.table}>
+      <br/>
+      <Typography variant="h6" color="black">
+      We are thrilled to confirm your booking. Here are the enchanting details of your adventure: ✈️✨
+      </Typography>
+      <br/>
+      <br/>
+      <table className="confirmation-table">
         <tbody>
-        <tr className={classes.tableRow}>
-            <td className={classes.tableHeader}>Passenger Name</td>
-            <td>{firstName} {lastName}</td>
+          <tr className="confirmation-table-row">
+            <td className="confirmation-table-header first-column">Passenger Full Name</td>
+            <td className="confirmation-table-data second-column">{firstName} {lastName}</td>
           </tr>
-          <tr className={classes.tableRow}>
-            <td className={classes.tableHeader}>Email Address</td>
-            <td>{emailAddress}</td>
+          <tr className="confirmation-table-row">
+            <td className="confirmation-table-header first-column">Email Address</td>
+            <td className="confirmation-table-data second-column">{emailAddress}</td>
           </tr>
-          <tr className={classes.tableRow}>
-            <td className={classes.tableHeader}>Flight Name</td>
-            <td>{flightName}</td>
+          <tr className="confirmation-table-row">
+            <td className="confirmation-table-header first-column">Flight Name</td>
+            <td className="confirmation-table-data second-column">{flightName}</td>
           </tr>
-          <tr className={classes.tableRow}>
-            <td className={classes.tableHeader}>Source</td>
-            <td>{source}</td>
+          <tr className="confirmation-table-row">
+            <td className="confirmation-table-header first-column">Source City</td>
+            <td className="confirmation-table-data second-column">{source}</td>
           </tr>
-          <tr className={classes.tableRow}>
-            <td className={classes.tableHeader}>Destination</td>
-            <td>{destination}</td>
+          <tr className="confirmation-table-row">
+            <td className="confirmation-table-header first-column">Destination City</td>
+            <td className="confirmation-table-data second-column">{destination}</td>
           </tr>
-          <tr className={classes.tableRow}>
-            <td className={classes.tableHeader}>Date of Journey</td>
-            <td>{dateOfJourney}</td>
+          <tr className="confirmation-table-row">
+            <td className="confirmation-table-header first-column">Date of Journey</td>
+            <td className="confirmation-table-data second-column">{dateOfJourney}</td>
           </tr>
-          <tr className={classes.tableRow}>
-            <td className={classes.tableHeader}>Time of Journey</td>
-            <td>{timeOfJourney}</td>
+          <tr className="confirmation-table-row">
+            <td className="confirmation-table-header first-column">Time of Journey</td>
+            <td className="confirmation-table-data second-column">{timeOfJourney}</td>
           </tr>
-          <tr className={classes.tableRow}>
-            <td className={classes.tableHeader}>Selected Seat</td>
-            <td>{selectedSeat}</td>
+          <tr className="confirmation-table-row">
+            <td className="confirmation-table-header first-column">Selected Seat</td>
+            <td className="confirmation-table-data second-column">{selectedSeat}</td>
           </tr>
-          <tr className={classes.tableRow}>
-            <td className={classes.tableHeader}>Ticket Fare (Inclusive of all Taxes)</td>
-            <td>₹{basePrice}</td>
+          <tr className="confirmation-table-row">
+            <td className="confirmation-table-header first-column">Ticket Fare (Inclusive of all Taxes)</td>
+            <td className="confirmation-table-data second-column">₹{basePrice}</td>
           </tr>
-          <tr className={classes.tableRow}>
-            <td className={classes.tableHeader}>Seat Selection Price</td>
-            <td>
-              ₹{seatPrice}
-            </td>
+          <tr className="confirmation-table-row">
+            <td className="confirmation-table-header first-column">Seat Selection Price</td>
+            <td className="confirmation-table-data second-column">₹{seatPrice}</td>
           </tr>
-          <tr className={classes.tableRow}>
-            <td className={classes.tableHeader}>Total Amount</td>
-            <td>₹{totalAmount}</td>
+          <tr className="confirmation-table-row">
+            <td className="confirmation-table-header first-column">Total Amount</td>
+            <td className="confirmation-table-data second-column">₹{totalAmount}</td>
           </tr>
         </tbody>
       </table>
 
       <Button
         variant="contained"
-        className={classes.button}
+        className="confirmation-button"
         onClick={() => history.push("/")}
       >
         Back to Home
@@ -128,7 +94,6 @@ const Confirmation = () => {
 
 Confirmation.propTypes = {
   history: PropTypes.object,
-  classes: PropTypes.object,
 };
 
 export default Confirmation;
