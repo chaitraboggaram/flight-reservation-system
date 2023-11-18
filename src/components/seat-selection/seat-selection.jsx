@@ -11,16 +11,6 @@ const calculateSeatPrice = () => {
     return SEAT_PRICE + randomPrice;
 };
 
-const handlePayment = () => {
-    if (selectedSeat && !bookedSeats.includes(selectedSeat)) {
-        const calculatedAmount = calculateSeatPrice();
-        setAmountToBePaid(calculatedAmount);
-        setSelectPayment(true);
-    } else {
-        setOpenModal(true);
-    }
-};
-
 const SeatSelection = () => {
     const [selectedSeat, setSelectedSeat] = useState(null);
     const [selectPayment, setSelectPayment] = useState(false);
@@ -54,8 +44,6 @@ const SeatSelection = () => {
     const destination = 'Destination';
     const dateOfJourney = 'November 25, 2023';
     const timeOfJourney = '10:00 AM';
-    // const dateOfReturn = 'Return Date';
-    // const timeOfReturn = 'Return Time';
     const passengerName = 'Passenger Name';
     const emailAddress = 'example@example.com';
     const phoneNumber = '123-456-7890';
@@ -63,8 +51,9 @@ const SeatSelection = () => {
 
     const handlePayment = () => {
         if (selectedSeat && !bookedSeats.includes(selectedSeat)) {
-            // Use the constant variable for the seat price
             setAmountToBePaid(SEAT_PRICE);
+            sessionStorage.setItem("selectedSeat", selectedSeat);
+
             setSelectPayment(true);
         } else {
             setOpenModal(true);

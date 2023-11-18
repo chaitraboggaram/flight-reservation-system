@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useHistory, useLocation } from 'react-router';
 import { Typography, Button } from "@material-ui/core";
@@ -8,24 +8,40 @@ const Confirmation = () => {
   const history = useHistory();
   const location = useLocation();
 
+  // Retrieve user information from the session
+  const storedFirstName = sessionStorage.getItem("FirstName");
+  const storedLastName = sessionStorage.getItem("LastName");
+  const storedEmailAddress = sessionStorage.getItem("EmailAddress");
+  
+  const [firstName, setFirstName] = useState(storedFirstName || "");
+  const [lastName, setLastName] = useState(storedLastName || "");
+  const [emailAddress, setEmailAddress] = useState(storedEmailAddress || "");
+
   // Receiving data from the payment page
   const {
     sessionID,
-        flightName,
-        source,
-        destination,
-        dateOfJourney,
-        timeOfJourney,
-        // dateOfReturn,
-        // timeOfReturn,
-        passengerName,
-        emailAddress,
-        phoneNumber,
-        selectedSeat,
-        ticketFare,
-        seatSelectionCost,
-        totalFare,
+    flightName,
+    source,
+    destination,
+    dateOfJourney,
+    timeOfJourney,
+    // dateOfReturn,
+    // timeOfReturn,
+    passengerName,
+    // emailAddress,
+    phoneNumber,
+    selectedSeat,
+    ticketFare,
+    seatSelectionCost,
+    totalFare,
   } = location.state || {};
+
+  useEffect(() => {
+    // Update the state with the latest user information from the session
+    setFirstName(storedFirstName || "");
+    setLastName(storedLastName || "");
+    setEmailAddress(storedEmailAddress || "");
+  }, [storedFirstName, storedLastName, storedEmailAddress]);
 
   const useStyles = makeStyles((theme) => ({
     container: {
@@ -71,9 +87,17 @@ const Confirmation = () => {
 
       <table className={classes.table}>
         <tbody>
+        <tr className={classes.tableRow}>
+            <td className={classes.tableHeader}>Passenger Name</td>
+            <td>{firstName} {lastName}</td>
+          </tr>
           <tr className={classes.tableRow}>
-            <td className={classes.tableHeader}>Session ID</td>
-            <td>{sessionID}</td>
+            <td className={classes.tableHeader}>Email Address</td>
+            <td>{emailAddress}</td>
+          </tr>
+          <tr className={classes.tableRow}>
+            <td className={classes.tableHeader}>Phone Number</td>
+            <td>{phoneNumber}</td>
           </tr>
           <tr className={classes.tableRow}>
             <td className={classes.tableHeader}>Flight Name</td>
@@ -94,26 +118,6 @@ const Confirmation = () => {
           <tr className={classes.tableRow}>
             <td className={classes.tableHeader}>Time of Journey</td>
             <td>{timeOfJourney}</td>
-          </tr>
-          {/* <tr className={classes.tableRow}>
-            <td className={classes.tableHeader}>Date of Return</td>
-            <td>{dateOfReturn}</td>
-          </tr>
-          <tr className={classes.tableRow}>
-            <td className={classes.tableHeader}>Time of Return</td>
-            <td>{timeOfReturn}</td>
-          </tr> */}
-          <tr className={classes.tableRow}>
-            <td className={classes.tableHeader}>Passenger Name</td>
-            <td>{passengerName}</td>
-          </tr>
-          <tr className={classes.tableRow}>
-            <td className={classes.tableHeader}>Email Address</td>
-            <td>{emailAddress}</td>
-          </tr>
-          <tr className={classes.tableRow}>
-            <td className={classes.tableHeader}>Phone Number</td>
-            <td>{phoneNumber}</td>
           </tr>
           <tr className={classes.tableRow}>
             <td className={classes.tableHeader}>Selected Seat</td>

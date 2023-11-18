@@ -39,17 +39,17 @@ function Payment() {
   const location = useLocation();
   const { selectedSeat, amountToBePaid } = location.state || {};
 
-  const flightName = 'ABC Airlines - Flight 123';
-  const source = 'Source';
-  const destination = 'Destination';
-  const dateOfJourney = 'November 25, 2023';
-  const timeOfJourney = '10:00 AM';
-  // const dateOfReturn = 'Return Date';
-  // const timeOfReturn = 'Return Time';
-  const passengerName = 'Passenger Name';
-  const emailAddress = 'example@example.com';
-  const phoneNumber = '123-456-7890';
-  const sessionID = 12;
+  // const flightName = 'ABC Airlines - Flight 123';
+  // const source = 'Source';
+  // const destination = 'Destination';
+  // const dateOfJourney = 'November 25, 2023';
+  // const timeOfJourney = '10:00 AM';
+  // // const dateOfReturn = 'Return Date';
+  // // const timeOfReturn = 'Return Time';
+  // const passengerName = 'Passenger Name';
+  // const emailAddress = 'example@example.com';
+  // const phoneNumber = '123-456-7890';
+  // const sessionID = 12;
 
   const handlePayment = (event) => {
     event.preventDefault();
