@@ -157,6 +157,15 @@ const FlightSearch = (props) => {
     (city) => !dest || city.name !== dest.name
   );
 
+  // Get the current date in the format "YYYY-MM-DD"
+  const getCurrentDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   return (
     <Grid container>
       <Grid item xs={12} md={12} className={classes.filterContainer}>
@@ -216,6 +225,10 @@ const FlightSearch = (props) => {
           InputLabelProps={{
             shrink: true,
           }}
+          // Set the minimum selectable date to the current date
+          inputProps={{
+            min: getCurrentDate(),
+          }}
         />
       </Grid>
       {selectTrip?.toUpperCase() === "BOTH" && (
@@ -229,6 +242,10 @@ const FlightSearch = (props) => {
             style={{ width: 300 }}
             InputLabelProps={{
               shrink: true,
+            }}
+            // Set the minimum selectable date to the Journey Date
+            inputProps={{
+              min: deptDate,
             }}
           />
         </Grid>
