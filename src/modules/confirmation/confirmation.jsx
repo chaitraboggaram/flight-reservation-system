@@ -9,39 +9,18 @@ const Confirmation = () => {
   const location = useLocation();
 
   // Retrieve user information from the session
-  const storedFirstName = sessionStorage.getItem("FirstName");
-  const storedLastName = sessionStorage.getItem("LastName");
-  const storedEmailAddress = sessionStorage.getItem("EmailAddress");
-  
-  const [firstName, setFirstName] = useState(storedFirstName || "");
-  const [lastName, setLastName] = useState(storedLastName || "");
-  const [emailAddress, setEmailAddress] = useState(storedEmailAddress || "");
-
-  // Receiving data from the payment page
-  const {
-    sessionID,
-    flightName,
-    source,
-    destination,
-    dateOfJourney,
-    timeOfJourney,
-    // dateOfReturn,
-    // timeOfReturn,
-    passengerName,
-    // emailAddress,
-    phoneNumber,
-    selectedSeat,
-    ticketFare,
-    seatSelectionCost,
-    totalFare,
-  } = location.state || {};
-
-  useEffect(() => {
-    // Update the state with the latest user information from the session
-    setFirstName(storedFirstName || "");
-    setLastName(storedLastName || "");
-    setEmailAddress(storedEmailAddress || "");
-  }, [storedFirstName, storedLastName, storedEmailAddress]);
+  const firstName = sessionStorage.getItem("FirstName");
+  const lastName = sessionStorage.getItem("LastName");
+  const emailAddress = sessionStorage.getItem("EmailAddress");
+  const selectedSeat = sessionStorage.getItem("selectedSeat");
+  const basePrice = sessionStorage.getItem("basePrice");
+  const totalAmount = sessionStorage.getItem("totalAmount");
+  const seatPrice = sessionStorage.getItem("seatPrice");
+  const flightName = "";
+  const source = "";
+  const destination = "";
+  const dateOfJourney = "";
+  const timeOfJourney = "";
 
   const useStyles = makeStyles((theme) => ({
     container: {
@@ -96,10 +75,6 @@ const Confirmation = () => {
             <td>{emailAddress}</td>
           </tr>
           <tr className={classes.tableRow}>
-            <td className={classes.tableHeader}>Phone Number</td>
-            <td>{phoneNumber}</td>
-          </tr>
-          <tr className={classes.tableRow}>
             <td className={classes.tableHeader}>Flight Name</td>
             <td>{flightName}</td>
           </tr>
@@ -125,17 +100,17 @@ const Confirmation = () => {
           </tr>
           <tr className={classes.tableRow}>
             <td className={classes.tableHeader}>Ticket Fare (Inclusive of all Taxes)</td>
-            <td>₹{ticketFare}</td>
+            <td>₹{basePrice}</td>
           </tr>
           <tr className={classes.tableRow}>
             <td className={classes.tableHeader}>Seat Selection Price</td>
             <td>
-              ₹{seatSelectionCost}
+              ₹{seatPrice}
             </td>
           </tr>
           <tr className={classes.tableRow}>
             <td className={classes.tableHeader}>Total Amount</td>
-            <td>₹{totalFare}</td>
+            <td>₹{totalAmount}</td>
           </tr>
         </tbody>
       </table>

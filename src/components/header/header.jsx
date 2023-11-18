@@ -28,9 +28,6 @@ const Header = ({ tabs, onShowTab }) => {
           setIsLoggedIn(true);
 
           sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
-          sessionStorage.setItem("FirstName", userInfo?.given_name || "");
-          sessionStorage.setItem("LastName", userInfo?.family_name || "");
-          sessionStorage.setItem("EmailAddress", userInfo?.email || "");
         }
       );
     },
@@ -111,7 +108,7 @@ const Header = ({ tabs, onShowTab }) => {
               style={{ backgroundColor: "black", color: "white", border: "1px solid white" }}
               onClick={handleMenuOpen}
             >
-              {`${userInfo?.given_name || sessionStorage.getItem("FirstName") || "Guest"}`}
+              {`${userInfo?.given_name}`}
             </Button>
             <Menu
               anchorEl={anchorEl}

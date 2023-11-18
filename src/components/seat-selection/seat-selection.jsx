@@ -6,11 +6,6 @@ import { useHistory } from "react-router";
 
 const SEAT_PRICE = 7000 + Math.floor(Math.random() * (2 * 249 + 1)) - 249;
 
-const calculateSeatPrice = () => {
-    
-    return SEAT_PRICE + randomPrice;
-};
-
 const SeatSelection = () => {
     const [selectedSeat, setSelectedSeat] = useState(null);
     const [selectPayment, setSelectPayment] = useState(false);
@@ -39,20 +34,10 @@ const SeatSelection = () => {
         setSelectedSeat((prevSeat) => (prevSeat === seatNumber ? null : seatNumber));
     };
 
-    const flightName = 'ABC Airlines - Flight 123';
-    const source = 'Source';
-    const destination = 'Destination';
-    const dateOfJourney = 'November 25, 2023';
-    const timeOfJourney = '10:00 AM';
-    const passengerName = 'Passenger Name';
-    const emailAddress = 'example@example.com';
-    const phoneNumber = '123-456-7890';
-    const sessionID = 12;
-
     const handlePayment = () => {
         if (selectedSeat && !bookedSeats.includes(selectedSeat)) {
-            setAmountToBePaid(SEAT_PRICE);
             sessionStorage.setItem("selectedSeat", selectedSeat);
+            sessionStorage.setItem("basePrice", SEAT_PRICE);
 
             setSelectPayment(true);
         } else {

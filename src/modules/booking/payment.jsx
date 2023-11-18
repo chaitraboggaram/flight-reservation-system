@@ -18,38 +18,11 @@ function Payment() {
   const [expiryError, setExpiryError] = useState('');
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
-  // Receiving data from seat-selection page
-  // const {
-  //   sessionID,
-  //   flightName,
-  //   source,
-  //   destination,
-  //   dateOfJourney,
-  //   timeOfJourney,
-  //   // dateOfReturn,
-  //   // timeOfReturn,
-  //   passengerName,
-  //   emailAddress,
-  //   phoneNumber,
-  //   selectedSeat,
-  //   amountToBePaid
-  // } = location.state || {};
+  const selectedSeat = sessionStorage.getItem("selectedSeat");
+  const basePrice = sessionStorage.getItem("basePrice");
 
   // Recieving data from seat-selection page
   const location = useLocation();
-  const { selectedSeat, amountToBePaid } = location.state || {};
-
-  // const flightName = 'ABC Airlines - Flight 123';
-  // const source = 'Source';
-  // const destination = 'Destination';
-  // const dateOfJourney = 'November 25, 2023';
-  // const timeOfJourney = '10:00 AM';
-  // // const dateOfReturn = 'Return Date';
-  // // const timeOfReturn = 'Return Time';
-  // const passengerName = 'Passenger Name';
-  // const emailAddress = 'example@example.com';
-  // const phoneNumber = '123-456-7890';
-  // const sessionID = 12;
 
   const handlePayment = (event) => {
     event.preventDefault();
@@ -118,31 +91,19 @@ function Payment() {
     return 0;
   };
   
+  const seatPrice = calculateSeatPrice(selectedSeat);
+  const totalAmount = parseInt(basePrice) + parseInt(seatPrice);
+
+  sessionStorage.setItem("totalAmount", totalAmount);
+  sessionStorage.setItem("seatPrice", seatPrice);
 
   const handleAlertClose = () => {
     setPaymentSuccess(false);
     if (paymentSuccess) {
-      history.push('/confirmation', {
-        sessionID,
-        flightName,
-        source,
-        destination,
-        dateOfJourney,
-        timeOfJourney,
-        // dateOfReturn,
-        // timeOfReturn,
-        passengerName,
-        emailAddress,
-        phoneNumber,
-        selectedSeat,
-        ticketFare: amountToBePaid,
-        seatSelectionCost: calculateSeatPrice(selectedSeat),
-        totalFare: totalAmount,
-      });
+      history.push('/confirmation');
     }
   };
   
-  const totalAmount = amountToBePaid + calculateSeatPrice(selectedSeat);
   const cardNumberErrorMessage = cardNumberError ? (
     <div className="error-message" style={{ color: 'red' }}>{cardNumberError}</div>
   ) : null;
@@ -164,12 +125,12 @@ function Payment() {
           <tbody>
             <tr>
               <td>Ticket Fare (Inclusive of all Taxes)</td>
-              <td>₹{amountToBePaid}</td>
+              <td>₹{basePrice}</td>
             </tr>
             <tr>
               <td>Seat Selection Price</td>
               <td>
-                ₹{calculateSeatPrice(selectedSeat)}
+                ₹{seatPrice}
               </td>
             </tr>
             <tr>
