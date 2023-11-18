@@ -4,21 +4,25 @@ import { Link, useLocation, useHistory } from "react-router-dom";
 import "./header.css";
 import { useGoogleLogin } from "@react-oauth/google";
 import GoogleServiceSingleton from "../../services/google-service-singleton";
+import {useUserInfoSession} from "./user-context";
 
 const Header = ({ tabs, onShowTab }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { userInfoSession, updateUserInfoSession, removeUserInfoSession } = useUserInfoSession();
 
   const history = useHistory();
 
   useEffect(() => {
-    const storedUserInfo = sessionStorage.getItem("userInfo");
-    if (storedUserInfo) {
-      setUserInfo(JSON.parse(storedUserInfo));
+    if (userInfoSession) {
+      setUserInfo(JSON.parse(userInfoSession));
       setIsLoggedIn(true);
+      setMenuOpen(false);
+      setAnchorEl(null);
     }
-  }, []);
+  }, [userInfoSession]);
 
   const login = useGoogleLogin({
     onSuccess: (tokenResponse) => {
@@ -26,15 +30,14 @@ const Header = ({ tabs, onShowTab }) => {
         (userInfo) => {
           setUserInfo(userInfo);
           setIsLoggedIn(true);
-
-          sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
+          updateUserInfoSession(JSON.stringify(userInfo));
         }
       );
     },
   });
 
   const handleLogout = () => {
-    sessionStorage.removeItem("userInfo");
+    removeUserInfoSession();
     setIsLoggedIn(false);
     history.push("/");
   };
@@ -52,10 +55,12 @@ const Header = ({ tabs, onShowTab }) => {
   };
 
   const handleMenuOpen = (event) => {
+    setMenuOpen(true);
     setAnchorEl(event.currentTarget);
   };
 
   const handleMenuClose = () => {
+    setMenuOpen(false);
     setAnchorEl(null);
   };
 
@@ -71,6 +76,56 @@ const Header = ({ tabs, onShowTab }) => {
     // For example, using react-router-dom:
     // history.push(tabs[newValue].path);
   };
+
+  const LoginMenuHTMLComponent = () => {
+    return (
+        <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+            getContentAnchorEl={null}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "center",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+            PaperProps={{
+              style: {
+                backgroundColor: "black",
+                color: "white",
+              },
+            }}
+        >
+          <MenuItem
+              onClick={handleBook}
+              style={{ color: "white" }}
+          >
+            Book Flights
+          </MenuItem>
+          <MenuItem
+              onClick={handleManage}
+              style={{ color: "white" }}
+          >
+            Manage Bookings
+          </MenuItem>
+          <MenuItem
+              onClick={handleHelp}
+              style={{ color: "white" }}
+          >
+            Help
+          </MenuItem>
+          <MenuItem
+              onClick={handleLogout}
+              style={{ color: "white" }}
+          >
+            Sign Out
+          </MenuItem>
+        </Menu>
+    )
+  }
 
   return (
     <AppBar position="static">
@@ -113,51 +168,7 @@ const Header = ({ tabs, onShowTab }) => {
             >
               {`${userInfo?.given_name}`}
             </Button>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleMenuClose}
-              getContentAnchorEl={null}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "center",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "center",
-              }}
-              PaperProps={{
-                style: {
-                  backgroundColor: "black",
-                  color: "white",
-                },
-              }}
-            >
-              <MenuItem
-                onClick={handleBook}
-                style={{ color: "white" }}
-              >
-                Book Flights
-              </MenuItem>
-              <MenuItem
-                onClick={handleManage}
-                style={{ color: "white" }}
-              >
-                Manage Bookings
-              </MenuItem>
-              <MenuItem
-                onClick={handleHelp}
-                style={{ color: "white" }}
-              >
-                Help
-              </MenuItem>
-              <MenuItem
-                onClick={handleLogout}
-                style={{ color: "white" }}
-              >
-                Sign Out
-              </MenuItem>
-            </Menu>
+            {menuOpen && <LoginMenuHTMLComponent />}
           </div>
         ) : (
           <Button

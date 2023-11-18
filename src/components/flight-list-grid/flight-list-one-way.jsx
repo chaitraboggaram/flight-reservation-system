@@ -19,6 +19,7 @@ import {
 
 import { useGoogleLogin } from "@react-oauth/google";
 import GoogleServiceSingleton from "../../services/google-service-singleton";
+import {useUserInfoSession} from "../header/user-context";
 
 const useStyles = makeStyles(() => ({
   textAlign: {
@@ -42,14 +43,13 @@ const FlightListOneWay = (props) => {
   let component = null;
 
   // Get session details from cache
-  const storedUserInfo = sessionStorage.getItem("userInfo");
-  const isLoggedIn = !!storedUserInfo;
+  const { userInfoSession, updateUserInfoSession } = useUserInfoSession();
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (userInfoSession) {
       setLoginDone(true);
     }
-  }, [isLoggedIn]);
+  }, [userInfoSession]);
 
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -57,10 +57,9 @@ const FlightListOneWay = (props) => {
         const userInfo = await GoogleServiceSingleton.getUserInfo(tokenResponse.access_token);
         console.log("Name: ", userInfo.name);
         console.log("Email: ", userInfo.email);
-        
         setLoginDone(true);
-        sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
-  
+        updateUserInfoSession(JSON.stringify(userInfo));
+
         // Redirect to /seat-selection
         history.push("/seat-selection");
       } catch (error) {
@@ -72,7 +71,7 @@ const FlightListOneWay = (props) => {
   
 
   const handleFlightSelection = async (event) => {
-    if (!isLoggedIn) {
+    if (!userInfoSession) {
       await login();
     } else {
       history.push("/seat-selection");
@@ -143,7 +142,11 @@ const FlightListOneWay = (props) => {
                               variant="contained"
                               style={{ backgroundColor: "black", color: "white" }}
                               onClick={handleFlightSelection}
-                            >{`Rs. ${val?.price}`}</Button>
+                            >
+                              {/*TODO: Add back min price if API returns it*/}
+                              {/*{`Rs. ${val?.price}`}*/}
+                              SELECT SEATS
+                            </Button>
                           </Grid>
                         </Grid>
                       </CardContent>
