@@ -18,7 +18,6 @@ import { validateSearch } from "../../services/global-services";
 import actions from "../../constants/actions";
 import FlightListOneWay from "../../components/flight-list-grid/flight-list-one-way";
 import CityJSON from "../../mocks/cities.json";
-import BookingService from "../../services/PassengerService";
 
 const cities = [...CityJSON];
 
@@ -41,30 +40,13 @@ const FlightSearch = (props) => {
   const flightList = useSelector((state) => state.flightSearch.searchList);
   const classes = useStyles();
 
-  const fetchData = () => {
-    console.log("inside fetch");
-    console.log(source, dest, deptDate);
-    BookingService.getFlightByArrivalAndDeparture(
-      source?.name,
-      dest?.name,
-      deptDate,
-      returnDate
-    ).then((res) => {
-      console.log("result", res);
-    });
-  };
-
   // On Page Load
   useEffect(() => {
-    if (source && dest && deptDate && returnDate) {
-      console.log("inside useeffect");
-      fetchData();
-    }
     // Reset Flight List
     dispatch({
       type: actions.RESET_FLIGHT_LIST,
     });
-  }, [source, dest, deptDate, returnDate]);
+  }, []);
 
   /**
    * @function handleSelectTrip

@@ -47,8 +47,8 @@ const filterBySourceDest = (payload, response) => {
 
   resultArr = tempArr.filter(
     (val) =>
-      val?.deptCity?.toLowerCase() === sourceCity?.toLowerCase() &&
-      val?.arivalCity?.toLowerCase() === destCity?.toLowerCase()
+      val?.departure?.toLowerCase() === sourceCity?.toLowerCase() &&
+      val?.arrival?.toLowerCase() === destCity?.toLowerCase()
   );
 
   return resultArr;

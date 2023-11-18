@@ -102,16 +102,16 @@ const FlightListOneWay = (props) => {
                           </Grid>
                           <Grid item xs={2} className={classes.textAlignCenter}>
                             <Typography align="center">
-                              {val.deptTime}
+                              {val.departureTime}
                             </Typography>
                             <Typography variant="caption">
-                              {val.deptCity}
+                              {val.departure}
                             </Typography>
                           </Grid>
                           <Grid item xs={2} className={classes.textAlignCenter}>
                             <Typography>{val.airlineName}</Typography>
                             <Typography variant="caption">
-                              {val.flightNbr}
+                              {val.flightNumber}
                             </Typography>
                             <br />
                             <Typography variant="caption">
@@ -121,9 +121,9 @@ const FlightListOneWay = (props) => {
                             </Typography>
                           </Grid>
                           <Grid item xs={2} className={classes.textAlignCenter}>
-                            <Typography>{val.arivalTime}</Typography>
+                            <Typography>{val.arrivalTime}</Typography>
                             <Typography variant="caption">
-                              {val.arivalCity}
+                              {val.arrival}
                             </Typography>
                           </Grid>
                           <Grid item xs={4} className={classes.textAlign}>
