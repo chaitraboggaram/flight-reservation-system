@@ -4,6 +4,14 @@ import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogAc
 import { ErrorOutline } from '@material-ui/icons';
 import { useHistory } from "react-router";
 
+// Check if the page has been refreshed before
+const hasRefreshed = localStorage.getItem('hasRefreshed');
+
+if (!hasRefreshed) {
+    window.location.reload();
+  localStorage.setItem('hasRefreshed', true);
+}
+
 const SEAT_PRICE = 7000 + Math.floor(Math.random() * (2 * 249 + 1)) - 249;
 
 const SeatSelection = () => {

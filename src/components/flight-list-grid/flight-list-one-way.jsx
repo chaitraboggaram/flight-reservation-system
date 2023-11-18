@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
-
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Avatar,
@@ -18,7 +17,6 @@ import {
   TableRow
 } from "@material-ui/core";
 
-import { thousandSeparator } from "../../services/global-services";
 import { useGoogleLogin } from "@react-oauth/google";
 import GoogleServiceSingleton from "../../services/google-service-singleton";
 
@@ -43,41 +41,41 @@ const FlightListOneWay = (props) => {
   const history = useHistory();
   let component = null;
 
+  // Get session details from cache
+  const storedUserInfo = sessionStorage.getItem("userInfo");
+  const isLoggedIn = !!storedUserInfo;
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      setLoginDone(true);
+    }
+  }, [isLoggedIn]);
+
   const login = useGoogleLogin({
-    onSuccess: (tokenResponse) => {
-      GoogleServiceSingleton.getUserInfo(tokenResponse.access_token).then(
-        (userInfo) => {
-          console.log("Name: ", userInfo.name);
-          console.log("Email: ", userInfo.email);
-          setLoginDone(true);
-        }
-      );
+    onSuccess: async (tokenResponse) => {
+      try {
+        const userInfo = await GoogleServiceSingleton.getUserInfo(tokenResponse.access_token);
+        console.log("Name: ", userInfo.name);
+        console.log("Email: ", userInfo.email);
+        
+        setLoginDone(true);
+        sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
+  
+        // Redirect to /seat-selection
+        history.push("/seat-selection");
+      } catch (error) {
+        // Handle error if user info cannot be retrieved
+        console.error("Error fetching user info:", error);
+      }
     },
   });
-
-  /**
-   * @function handleChangePage
-   * @param {object} event
-   * @param {object} newPage
-   * @description change page in pagination
-   */
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  /**
-   * @function handleChangeRowsPerPage
-   * @param {object} event
-   * @description change rows per page in pagination
-   */
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+  
 
   const handleFlightSelection = async (event) => {
-    if (!loginDone) {
+    if (!isLoggedIn) {
       await login();
+    } else {
+      history.push("/seat-selection");
     }
   };
 
@@ -145,7 +143,7 @@ const FlightListOneWay = (props) => {
                               variant="contained"
                               style={{ backgroundColor: "black", color: "white" }}
                               onClick={handleFlightSelection}
-                            >{`Rs. ${thousandSeparator(val?.price)}`}</Button>
+                            >{`Rs. ${val?.price}`}</Button>
                           </Grid>
                         </Grid>
                       </CardContent>
@@ -161,8 +159,11 @@ const FlightListOneWay = (props) => {
           count={flightList.result.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
+          onChangePage={(event, newPage) => setPage(newPage)}
+          onChangeRowsPerPage={(event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+          }}
         />
       </Table>
     );
@@ -171,15 +172,6 @@ const FlightListOneWay = (props) => {
   } else if (flightList?.error) {
     component = <Typography>{`Unable to fetch Data...`}</Typography>;
   }
-
-  useEffect(() => {
-    const redirectUser = async () => {
-      if (loginDone) {
-        await history.push("/seat-selection");
-      }
-    };
-    redirectUser();
-  }, [loginDone, history]);
 
   return (
     <Grid container>
