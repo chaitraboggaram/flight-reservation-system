@@ -4,6 +4,23 @@ import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogAc
 import { ErrorOutline } from '@material-ui/icons';
 import { useHistory } from "react-router";
 
+const SEAT_PRICE = 7000 + Math.floor(Math.random() * (2 * 249 + 1)) - 249;
+
+const calculateSeatPrice = () => {
+    
+    return SEAT_PRICE + randomPrice;
+};
+
+const handlePayment = () => {
+    if (selectedSeat && !bookedSeats.includes(selectedSeat)) {
+        const calculatedAmount = calculateSeatPrice();
+        setAmountToBePaid(calculatedAmount);
+        setSelectPayment(true);
+    } else {
+        setOpenModal(true);
+    }
+};
+
 const SeatSelection = () => {
     const [selectedSeat, setSelectedSeat] = useState(null);
     const [selectPayment, setSelectPayment] = useState(false);
@@ -32,11 +49,22 @@ const SeatSelection = () => {
         setSelectedSeat((prevSeat) => (prevSeat === seatNumber ? null : seatNumber));
     };
 
+    const flightName = 'ABC Airlines - Flight 123';
+    const source = 'Source';
+    const destination = 'Destination';
+    const dateOfJourney = 'November 25, 2023';
+    const timeOfJourney = '10:00 AM';
+    // const dateOfReturn = 'Return Date';
+    // const timeOfReturn = 'Return Time';
+    const passengerName = 'Passenger Name';
+    const emailAddress = 'example@example.com';
+    const phoneNumber = '123-456-7890';
+    const sessionID = 12;
+
     const handlePayment = () => {
         if (selectedSeat && !bookedSeats.includes(selectedSeat)) {
-            const calculatedAmount = 7000; 
-            setAmountToBePaid(calculatedAmount);
-
+            // Use the constant variable for the seat price
+            setAmountToBePaid(SEAT_PRICE);
             setSelectPayment(true);
         } else {
             setOpenModal(true);
@@ -51,7 +79,7 @@ const SeatSelection = () => {
 
     useEffect(() => {
         if (selectPayment) {
-            history.push("/payment", { selectedSeat, amountToBePaid }); 
+            history.push("/payment", { selectedSeat, amountToBePaid });
         }
     }, [selectPayment, history, selectedSeat, amountToBePaid]);
 

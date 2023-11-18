@@ -21,7 +21,7 @@ const get = (url, options) => {
             // Handle errors here
             console.error("Error during GET request:", error);
             // TODO: Remove this as after Backend integration
-            // return undefined;
+            return undefined;
             throw error; // Rethrow the error to propagate it further if needed
         });
 };
