@@ -10,7 +10,7 @@ import {
   Radio,
   FormControlLabel,
   RadioGroup,
-  Typography
+  Typography,
 } from "@material-ui/core";
 
 import { Autocomplete } from "@material-ui/lab";
@@ -18,25 +18,23 @@ import { validateSearch } from "../../services/global-services";
 import actions from "../../constants/actions";
 import FlightListOneWay from "../../components/flight-list-grid/flight-list-one-way";
 import CityJSON from "../../mocks/cities.json";
-import BookingService from "../../services/PassengerService" 
+import BookingService from "../../services/PassengerService";
 
 const cities = [...CityJSON];
 
 const useStyles = makeStyles(() => ({
   filterContainer: {
-    marginBottom: 25
-  }
+    marginBottom: 25,
+  },
 }));
 
 const FlightSearch = (props) => {
-  const [source, setSource] = useState("");
-  const [dest, setDest] = useState("");
+  const [source, setSource] = useState(null);
+  const [dest, setDest] = useState(null);
   const [deptDate, setDeptDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
   const [selectTrip, setSelectTrip] = useState("one");
   const [searchDone, setSearchDone] = useState(false);
-  const [inputSource, setInputSource] = useState("");
-  const [inputDest, setInputDest] = useState("");
   const [cityError, setCityError] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -45,10 +43,10 @@ const FlightSearch = (props) => {
 
   const fetchData = () => {
     console.log("inside fetch");
-    console.log(inputSource, inputDest, deptDate);
+    console.log(source, dest, deptDate);
     BookingService.getFlightByArrivalAndDeparture(
-      inputSource,
-      inputDest,
+      source?.name,
+      dest?.name,
       deptDate,
       returnDate
     ).then((res) => {
@@ -58,7 +56,7 @@ const FlightSearch = (props) => {
 
   // On Page Load
   useEffect(() => {
-    if (inputSource && inputDest && deptDate && returnDate) {
+    if (source && dest && deptDate && returnDate) {
       console.log("inside useeffect");
       fetchData();
     }
@@ -66,24 +64,15 @@ const FlightSearch = (props) => {
     dispatch({
       type: actions.RESET_FLIGHT_LIST,
     });
-  }, [inputSource, inputDest, deptDate, returnDate]);
+  }, [source, dest, deptDate, returnDate]);
 
   /**
-   * @function handleSource
-   * @param {object} newVal
-   * @description get source city details
+   * @function handleSelectTrip
+   * @param {object} e
+   * @description get selected trip one way or round
    */
-  const handleSource = (newVal) => {
-    setSource(newVal);
-  };
-
-  /**
-   * @function handleDestination
-   * @param {object} newVal
-   * @description get destination city details
-   */
-  const handleDestination = (newVal) => {
-    setDest(newVal);
+  const handleSelectTrip = (e) => {
+    setSelectTrip(e.target.value);
   };
 
   /**
@@ -93,15 +82,6 @@ const FlightSearch = (props) => {
    */
   const handleDeparture = (e) => {
     setDeptDate(e.target.value);
-  };
-
-  /**
-   * @function handleSelectTrip
-   * @param {object} e
-   * @description get selected trip one way or round
-   */
-  const handleSelectTrip = (e) => {
-    setSelectTrip(e.target.value);
   };
 
   /**
@@ -125,7 +105,7 @@ const FlightSearch = (props) => {
     payload.deptDate = deptDate;
     payload.returnDate = returnDate;
     payload.tripType = selectTrip;
-    //console.log("payload", payload);
+
     if (
       payload?.source?.toLowerCase() === payload?.destination?.toLowerCase()
     ) {
@@ -137,16 +117,17 @@ const FlightSearch = (props) => {
     }
     // Reset Flight List
     dispatch({
-      type: actions.RESET_FLIGHT_LIST
+      type: actions.RESET_FLIGHT_LIST,
     });
     // Get flight List
     dispatch({
       type: actions.GET_FLIGHT_LIST,
-      payload
+      payload,
     });
 
     setSearchDone(true);
   };
+
   /**
    * @function handleBookNow
    * @param {object} bookingVal
@@ -156,7 +137,7 @@ const FlightSearch = (props) => {
     let timer;
     dispatch({
       type: actions.SET_BOOKING_DETAILS,
-      payload: bookingVal
+      payload: bookingVal,
     });
 
     clearTimeout(timer);
@@ -165,6 +146,16 @@ const FlightSearch = (props) => {
       history.push("/flight-booking");
     }, 100);
   };
+
+  // Filter destination options based on selected source
+  const filteredDestinations = cities.filter(
+    (city) => !source || city.name !== source.name
+  );
+
+  // Filter source options based on selected destination
+  const filteredSources = cities.filter(
+    (city) => !dest || city.name !== dest.name
+  );
 
   return (
     <Grid container>
@@ -185,15 +176,11 @@ const FlightSearch = (props) => {
       <Grid item xs={12} md={6} className={classes.filterContainer}>
         <Autocomplete
           value={source}
-          inputValue={inputSource}
           onChange={(event, newValue) => {
-            handleSource(newValue);
-          }}
-          onInputChange={(event, newInputValue) => {
-            setInputSource(newInputValue);
+            setSource(newValue);
           }}
           getOptionLabel={(option) => option.name}
-          options={cities}
+          options={filteredSources}
           style={{ width: 300 }}
           renderInput={(params) => (
             <TextField {...params} label="Source City" variant="outlined" />
@@ -203,15 +190,11 @@ const FlightSearch = (props) => {
       <Grid item xs={12} md={6} className={classes.filterContainer}>
         <Autocomplete
           value={dest}
-          inputValue={inputDest}
           onChange={(event, newValue) => {
-            handleDestination(newValue);
-          }}
-          onInputChange={(event, newInputValue) => {
-            setInputDest(newInputValue);
+            setDest(newValue);
           }}
           getOptionLabel={(option) => option.name}
-          options={cities}
+          options={filteredDestinations}
           style={{ width: 300 }}
           renderInput={(params) => (
             <TextField
@@ -231,7 +214,7 @@ const FlightSearch = (props) => {
           variant="outlined"
           style={{ width: 300 }}
           InputLabelProps={{
-            shrink: true
+            shrink: true,
           }}
         />
       </Grid>
@@ -245,7 +228,7 @@ const FlightSearch = (props) => {
             variant="outlined"
             style={{ width: 300 }}
             InputLabelProps={{
-              shrink: true
+              shrink: true,
             }}
           />
         </Grid>
@@ -272,7 +255,7 @@ const FlightSearch = (props) => {
           <Typography
             variant="body1"
             color="error"
-          >{`Source and Destination City can not be same`}</Typography>
+          >{`Source and Destination City can not be the same`}</Typography>
         )}
         {searchDone && (
           <FlightListOneWay flightList={flightList} bookNow={handleBookNow} />
@@ -286,7 +269,7 @@ FlightSearch.propTypes = {
   history: PropTypes.object,
   classes: PropTypes.object,
   dispatch: PropTypes.func,
-  flightList: PropTypes.object
+  flightList: PropTypes.object,
 };
 
 export default FlightSearch;

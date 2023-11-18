@@ -3,11 +3,10 @@ import React, {lazy, Suspense, useState} from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Grid, CssBaseline, Container, Toolbar } from "@material-ui/core";
 
-import "../../styles.css";
+import "./home.css";
 
 import Header from "../../components/header/header";
 import ErrorBoundaries from "../../components/error-boundaries/error-boundaries";
-// const Dashboard = lazy(() => import("./dashboard"));
 const Confirmation = lazy(() => import("../confirmation/confirmation"));
 const FlightSearch = lazy(() => import("../search/flight-search"));
 const FlightBooking = lazy(() => import("../booking/flight-booking"));
@@ -24,8 +23,6 @@ const Home = () => {
     { label: 'About', path: '/about', show: true },
     { label: 'Help', path: '/help', show: true },
     { label: 'Admin', path: '/admin', show: false },
-
-    // Add more tabs as needed
   ]);
 
   const handleShowTab = (tabIndex) => {

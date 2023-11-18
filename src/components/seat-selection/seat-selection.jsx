@@ -115,7 +115,7 @@ const SeatSelection = () => {
                 </DialogTitle>
                 <DialogContent style={{ background: 'white', padding: '20px' }}>
                     <DialogContentText style={{ fontSize: '16px', textAlign: 'center' }}>
-                        {isSeatBooked(selectedSeat) ? 'This seat is already booked.' : 'Please select a seat before confirming.'}
+                        {isSeatBooked(selectedSeat) ? 'This seat is already booked' : 'Please select a seat before confirming'}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions style={{ justifyContent: 'center', background: 'white', padding: '10px' }}>
