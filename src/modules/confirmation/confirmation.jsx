@@ -3,19 +3,22 @@ import PropTypes from "prop-types";
 import { useHistory } from "react-router-dom";
 import { Typography, Button } from "@material-ui/core";
 import "./confirmation.css"; // Import the CSS file
+import {useUserInfoSession} from "../../components/header/user-context";
 
 const Confirmation = () => {
   const history = useHistory();
 
   // Retrieve user information from the session
-  const firstName = sessionStorage.getItem("FirstName");
-  const lastName = sessionStorage.getItem("LastName");
-  const emailAddress = sessionStorage.getItem("EmailAddress");
-  const selectedSeat = sessionStorage.getItem("selectedSeat");
+  const {userInfoSession} = useUserInfoSession();
+  console.log("confirmation ss:", userInfoSession);
+  const firstName = userInfoSession.given_name;
+  const lastName = userInfoSession.family_name;
+  const emailAddress = userInfoSession.email;
+  const selectedSeat = userInfoSession.selectedSeat;
   const basePrice = sessionStorage.getItem("basePrice");
   const totalAmount = sessionStorage.getItem("totalAmount");
-  const seatPrice = sessionStorage.getItem("seatPrice");
-  const flightName = "";
+  const seatPrice = userInfoSession.seatPrice;
+  const flightName = userInfoSession.selectedFlightNumber;
   const source = "";
   const destination = "";
   const dateOfJourney = "";

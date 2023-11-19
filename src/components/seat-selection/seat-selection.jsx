@@ -1,173 +1,196 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import './seat-selection.css';
-import {Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions} from "@material-ui/core";
-import {ErrorOutline} from '@material-ui/icons';
-import {useHistory} from "react-router";
-import {useUserInfoSession} from "../header/user-context";
-import SeatBookingServices from "../../services/seat-booking-services";
-
-// Check if the page has been refreshed before
-const hasRefreshed = localStorage.getItem('hasRefreshed');
-
-if (!hasRefreshed) {
-    window.location.reload();
-    localStorage.setItem('hasRefreshed', true);
-}
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from '@material-ui/core';
+import { ErrorOutline } from '@material-ui/icons';
+import { useHistory } from 'react-router';
+import { useUserInfoSession } from '../header/user-context';
+import SeatBookingServices from '../../services/seat-booking-services';
 
 const SEAT_PRICE = 7000 + Math.floor(Math.random() * (2 * 249 + 1)) - 249;
 
 const SeatSelection = () => {
-    const [selectedSeat, setSelectedSeat] = useState(null);
-    const [selectedClass, setSelectedClass] = useState(null);
-    const [selectPayment, setSelectPayment] = useState(false);
-    const [openModal, setOpenModal] = useState(false);
-    const [amountToBePaid, setAmountToBePaid] = useState(0);
-    const history = useHistory();
+  const [selectedSeat, setSelectedSeat] = useState(null);
+  const [selectedClass, setSelectedClass] = useState(null);
+  const [selectPayment, setSelectPayment] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [amountToBePaid, setAmountToBePaid] = useState(0);
+  const [availableSeats, setAvailableSeats] = useState([]);
+  const [bookedSeats, setBookedSeats] = useState([]);
 
-    const {userInfoSession, updateUserInfoSession} = useUserInfoSession();
+  const history = useHistory();
 
-    useEffect(() => {
-        const seatsInformation = async () => {
-            const data = await SeatBookingServices.getAllSeats(userInfoSession.selectedFlightNumber);
-            console.log("Seat Info from Backend: ", data);
-        }
-        seatsInformation();
-    }, []);
+  const { userInfoSession, updateUserInfoSession } = useUserInfoSession();
 
-    const bookedSeats = ['B2', 'E5', 'F3'];
+  useEffect(() => {
+    const seatsInformation = async () => {
+      const data = await SeatBookingServices.getAllSeats(
+        userInfoSession.selectedFlightNumber
+      );
+      console.log("Seat Info from Backend: ", data);
 
-    const seatLayout = [
-        {class: 'Business Class', seats: ['B1', 'B2', 'B3', 'B4']},
-        {class: 'First Class', seats: ['F1', 'F2', 'F3', 'F4']},
-        {
-            class: 'Economy Class',
-            rows: [
-                ['E1', 'E2', 'E3', 'E4', 'E5', 'E6'],
-                ['E7', 'E8', 'E9', 'E10', 'E11', 'E12'],
-                ['E13', 'E14', 'E15', 'E16', 'E17', 'E18'],
-                ['E19', 'E20', 'E21', 'E22', 'E23', 'E24'],
-                ['E25', 'E26', 'E27', 'E28', 'E29', 'E30']
-            ]
-        }
-    ];
-
-    const handleSeatClick = (seatNumber, seatClass) => {
-        setSelectedSeat((prevSeat) => (prevSeat === seatNumber ? null : seatNumber));
-        setSelectedClass(seatClass);
+      // Filter seats with passengerId === -1 for available seats
+      const availableSeats = data.filter(seat => seat.passengerId === -1);
+      const bookedSeats = data.filter(seat => seat.passengerId !== -1);
+      setAvailableSeats(availableSeats);
+      setBookedSeats(bookedSeats);
     };
+    seatsInformation();
+  }, [userInfoSession.selectedFlightNumber]);
 
-    const handlePayment = () => {
-        if (selectedSeat && !bookedSeats.includes(selectedSeat)) {
-            sessionStorage.setItem("selectedSeat", selectedSeat);
-            sessionStorage.setItem("basePrice", SEAT_PRICE);
-            const fetchBookInformation = async () => {
-                const data = await SeatBookingServices.bookSeats(userInfoSession.selectedFlightNumber,
-                    userInfoSession.userId, selectedSeat, selectedClass, SEAT_PRICE);
-                console.log("Seat Info from Backend: ", data);
-            }
-            fetchBookInformation();
+  const handleSeatClick = (seatNumber, seatClass) => {
+    setSelectedSeat((prevSeat) => (prevSeat === seatNumber ? null : seatNumber));
+    setSelectedClass(seatClass);
+  };
 
-            setSelectPayment(true);
-        } else {
-            setOpenModal(true);
-        }
-    };
+  const handlePayment = () => {
+    if (selectedSeat && availableSeats.map(seat => seat.seatNumber).includes(selectedSeat)) {
+      sessionStorage.setItem('selectedSeat', selectedSeat);
+      sessionStorage.setItem('basePrice', SEAT_PRICE);
+      const fetchBookInformation = async () => {
+        const data = await SeatBookingServices.bookSeats(
+          userInfoSession.selectedFlightNumber,
+          userInfoSession.userId,
+          selectedSeat,
+          selectedClass,
+          SEAT_PRICE
+        );
+        console.log("Seat Info from Backend: ", data);
+      };
+      fetchBookInformation();
 
-    const handleModalClose = () => {
-        setOpenModal(false);
-    };
+      setSelectPayment(true);
+    } else {
+      setOpenModal(true);
+    }
+  };
 
-    const isSeatBooked = (seat) => bookedSeats.includes(seat);
+  const handleModalClose = () => {
+    setOpenModal(false);
+  };
 
-    useEffect(() => {
-        if (selectPayment) {
-            history.push("/payment", {selectedSeat, amountToBePaid});
-        }
-    }, [selectPayment, history, selectedSeat, amountToBePaid]);
+  const isSeatBooked = (seat) => bookedSeats.includes(seat);
 
-    return (
-        <div className="seat-selection-container">
-            <h2 style={{textAlign: 'center', marginBottom: '10px'}}>Select Your Seat</h2>
-            <div className="container">
-                {seatLayout.map((classSeats, classIndex) => (
-                    <div key={classIndex} style={{textAlign: 'center'}}>
-                        <h3 style={{display: 'inline-block', marginBottom: '10px'}}>{classSeats.class}</h3>
-                        {classSeats.seats && (
-                            <div className="seat-row">
-                                {classSeats.seats.map((seat) => (
-                                    <div
-                                        key={seat}
-                                        className={`seat ${selectedSeat === seat ? 'selected' : ''} ${isSeatBooked(seat) ? 'booked' : ''}`}
-                                        onClick={() => handleSeatClick(seat, classSeats.class)}
-                                    >
-                                        {seat}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                        {classSeats.rows && classSeats.rows.map((row, rowIndex) => (
-                            <div key={rowIndex} className="seat-row">
-                                {row.map((seat) => (
-                                    <div
-                                        key={seat}
-                                        className={`seat ${selectedSeat === seat ? 'selected' : ''} ${isSeatBooked(seat) ? 'booked' : ''}`}
-                                        onClick={() => handleSeatClick(seat, classSeats.class)}
-                                    >
-                                        {seat}
-                                    </div>
-                                ))}
-                            </div>
-                        ))}
-                    </div>
-                ))}
-            </div>
-            <div className="selected-seats">
-                <p>Selected Seat: {selectedSeat || 'None'}</p>
-            </div>
-            <br/>
-            <div style={{textAlign: 'center'}}>
-                <Button
-                    style={{backgroundColor: '#000', color: '#fff'}}
-                    onClick={handlePayment}
+  useEffect(() => {
+    if (selectPayment) {
+      history.push('/payment', { selectedSeat, amountToBePaid });
+    }
+  }, [selectPayment, history, selectedSeat, amountToBePaid]);
+
+  // Function to get class based on seat number
+  const getClassFromSeatNumber = (seatNumber) => {
+    if (seatNumber.startsWith('F')) {
+      return 'First Class';
+    } else if (seatNumber.startsWith('B')) {
+      return 'Business Class';
+    } else if (seatNumber.startsWith('E')) {
+      return 'Economy Class';
+    }
+    return 'Unknown Class';
+  };
+
+  // Organize seats by class and rows
+  const organizedSeats = availableSeats.reduce((acc, seat) => {
+    const seatClass = getClassFromSeatNumber(seat.seatNumber);
+    if (!acc[seatClass]) {
+      acc[seatClass] = [];
+    }
+    acc[seatClass].push(seat);
+    return acc;
+  }, {});
+
+  return (
+    <div className="seat-selection-container">
+      <h2 style={{ textAlign: 'center', marginBottom: '10px' }}>
+        Select Your Seat
+      </h2>
+      <div className="container">
+        {/* Render seat layout here */}
+        {Object.entries(organizedSeats).map(([classType, seats]) => (
+          <div key={classType} style={{ textAlign: 'center' }}>
+            <h3>{classType}</h3>
+            <div className="seat-row">
+              {seats.map(seat => (
+                <div
+                  key={seat.seatNumber}
+                  className={`seat ${selectedSeat === seat.seatNumber ? 'selected' : ''} ${
+                    isSeatBooked(seat.seatNumber) ? 'booked' : ''
+                  }`}
+                  onClick={() => handleSeatClick(seat.seatNumber, seat.seatClass)}
                 >
-                    Confirm Seat
-                </Button>
-                <Button
-                    style={{backgroundColor: '#ccc', color: '#000', marginLeft: '10px'}}
-                    onClick={() => {
-                        setSelectedSeat(null);
-                        setSelectedClass(null);
-                        setAmountToBePaid(0);
-                    }}
-                >
-                    Clear Selection
-                </Button>
+                  {seat.seatNumber}
+                </div>
+              ))}
             </div>
+          </div>
+        ))}
+      </div>
+      <div className="selected-seats">
+        <p>Selected Seat: {selectedSeat || 'None'}</p>
+      </div>
+      <br />
+      <div style={{ textAlign: 'center' }}>
+        <Button
+          style={{ backgroundColor: '#000', color: '#fff' }}
+          onClick={handlePayment}
+        >
+          Confirm Seat
+        </Button>
+        <Button
+          style={{ backgroundColor: '#ccc', color: '#000', marginLeft: '10px' }}
+          onClick={() => {
+            setSelectedSeat(null);
+            setSelectedClass(null);
+            setAmountToBePaid(0);
+          }}
+        >
+          Clear Selection
+        </Button>
+      </div>
 
-            {/* Custom Modal */}
-            <Dialog open={openModal} onClose={handleModalClose}>
-                <DialogTitle style={{textAlign: 'center', background: 'black', color: 'white', padding: '10px 0'}}>
-                    <ErrorOutline style={{fontSize: '2rem', verticalAlign: 'middle', marginRight: '5px'}}/>
-                    Alert
-                </DialogTitle>
-                <DialogContent style={{background: 'white', padding: '20px'}}>
-                    <DialogContentText style={{fontSize: '16px', textAlign: 'center'}}>
-                        {isSeatBooked(selectedSeat) ? 'This seat is already booked' : 'Please select a seat before confirming'}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions style={{justifyContent: 'center', background: 'white', padding: '10px'}}>
-                    <Button
-                        onClick={handleModalClose}
-                        color="primary"
-                        variant="contained"
-                        style={{background: 'black', color: 'white'}}
-                    >
-                        OK
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </div>
-    );
+      {/* Custom Modal */}
+      <Dialog open={openModal} onClose={handleModalClose}>
+        <DialogTitle
+          style={{
+            textAlign: 'center',
+            background: 'black',
+            color: 'white',
+            padding: '10px 0',
+          }}
+        >
+          <ErrorOutline
+            style={{ fontSize: '2rem', verticalAlign: 'middle', marginRight: '5px' }}
+          />
+          Alert
+        </DialogTitle>
+        <DialogContent style={{ background: 'white', padding: '20px' }}>
+          <DialogContentText style={{ fontSize: '16px', textAlign: 'center' }}>
+            {isSeatBooked(selectedSeat)
+              ? 'This seat is already booked'
+              : 'Please select a seat before confirming'}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions
+          style={{ justifyContent: 'center', background: 'white', padding: '10px' }}
+        >
+          <Button
+            onClick={handleModalClose}
+            color="primary"
+            variant="contained"
+            style={{ background: 'black', color: 'white' }}
+          >
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
 };
 
 export default SeatSelection;

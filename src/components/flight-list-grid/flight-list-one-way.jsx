@@ -131,7 +131,7 @@ const FlightListOneWay = (props) => {
                             <Typography variant="caption">
                               {val.noOfStops === "0"
                                 ? `No Stops`
-                                : `${val.noOfStops} Stops`}
+                                : `Non-Stop`}
                             </Typography>
                           </Grid>
                           <Grid
@@ -150,9 +150,7 @@ const FlightListOneWay = (props) => {
                               style={{ backgroundColor: "black", color: "white" }}
                               onClick={() => handleFlightSelection(val.flightNumber)}
                             >
-                              {/*TODO: Add back min price if API returns it*/}
-                              {/*{`Rs. ${val?.price}`}*/}
-                              SELECT SEATS
+                              {`₹ ${val?.minimumSeatPrice + Math.floor(Math.random() * 399) - 199}`}
                             </Button>
                           </Grid>
                         </Grid>

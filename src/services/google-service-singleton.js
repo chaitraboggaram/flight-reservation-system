@@ -12,7 +12,7 @@ export default class GoogleServiceSingleton {
         return axios.get(GOOGLE_USER_INFO_URL, config)
             .then(firstResponse => {
                 const googleResponse = firstResponse.data;
-                const savePassengerURL = LOCAL_BACKEND_BASE_URL + '/passenger/savePassenger';
+                const savePassengerURL = LOCAL_BACKEND_BASE_URL + 'passenger/savePassenger';
                 const savePassengerRequest = {
                     emailId: googleResponse.email,
                     admin: 0,

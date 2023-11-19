@@ -80,9 +80,9 @@ function Payment() {
       const seatNumber = parseInt(selectedSeat.substring(1), 10);
   
       if (seatNumber >= 1 && seatNumber <= 4 && selectedSeat.charAt(0) === 'B') {
-        return Math.floor(Math.random() * (1500 - 1000 + 1)) + 2000;
-      } else if (seatNumber >= 1 && seatNumber <= 4 && selectedSeat.charAt(0) === 'F') {
         return Math.floor(Math.random() * (800 - 500 + 1)) + 800;
+      } else if (seatNumber >= 1 && seatNumber <= 4 && selectedSeat.charAt(0) === 'F') {
+        return Math.floor(Math.random() * (1500 - 1000 + 1)) + 2000;
       } else if (['E1', 'E6', 'E7', 'E12', 'E13', 'E18', 'E19', 'E24', 'E25', 'E30'].includes(selectedSeat)) {
         return Math.floor(Math.random() * (300 - 200 + 1)) + 200;
       }
