@@ -39,6 +39,7 @@ const FlightListOneWay = (props) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [loginDone, setLoginDone] = useState(false);
+  const [flightSelected, setFlightSelected] = useState("");
   const history = useHistory();
   let component = null;
 
@@ -55,10 +56,11 @@ const FlightListOneWay = (props) => {
     onSuccess: async (tokenResponse) => {
       try {
         const userInfo = await GoogleServiceSingleton.getUserInfo(tokenResponse.access_token);
-        console.log("Name: ", userInfo.name);
-        console.log("Email: ", userInfo.email);
         setLoginDone(true);
-        updateUserInfoSession(JSON.stringify(userInfo));
+        updateUserInfoSession({
+          ...userInfo,
+          selectedFlightNumber: flightSelected,
+        });
 
         // Redirect to /seat-selection
         history.push("/seat-selection");
@@ -70,10 +72,15 @@ const FlightListOneWay = (props) => {
   });
   
 
-  const handleFlightSelection = async (event) => {
+  const handleFlightSelection = async (selectedFlightNumber) => {
+    setFlightSelected(selectedFlightNumber);
     if (!userInfoSession) {
       await login();
     } else {
+      updateUserInfoSession({
+        ...userInfoSession,
+        selectedFlightNumber: selectedFlightNumber
+      })
       history.push("/seat-selection");
     }
   };
@@ -141,7 +148,7 @@ const FlightListOneWay = (props) => {
                             <Button
                               variant="contained"
                               style={{ backgroundColor: "black", color: "white" }}
-                              onClick={handleFlightSelection}
+                              onClick={() => handleFlightSelection(val.flightNumber)}
                             >
                               {/*TODO: Add back min price if API returns it*/}
                               {/*{`Rs. ${val?.price}`}*/}

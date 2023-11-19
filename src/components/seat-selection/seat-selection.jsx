@@ -1,31 +1,44 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import './seat-selection.css';
-import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@material-ui/core";
-import { ErrorOutline } from '@material-ui/icons';
-import { useHistory } from "react-router";
+import {Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions} from "@material-ui/core";
+import {ErrorOutline} from '@material-ui/icons';
+import {useHistory} from "react-router";
+import {useUserInfoSession} from "../header/user-context";
+import SeatBookingServices from "../../services/seat-booking-services";
 
 // Check if the page has been refreshed before
 const hasRefreshed = localStorage.getItem('hasRefreshed');
 
 if (!hasRefreshed) {
     window.location.reload();
-  localStorage.setItem('hasRefreshed', true);
+    localStorage.setItem('hasRefreshed', true);
 }
 
 const SEAT_PRICE = 7000 + Math.floor(Math.random() * (2 * 249 + 1)) - 249;
 
 const SeatSelection = () => {
     const [selectedSeat, setSelectedSeat] = useState(null);
+    const [selectedClass, setSelectedClass] = useState(null);
     const [selectPayment, setSelectPayment] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [amountToBePaid, setAmountToBePaid] = useState(0);
     const history = useHistory();
 
+    const {userInfoSession, updateUserInfoSession} = useUserInfoSession();
+
+    useEffect(() => {
+        const seatsInformation = async () => {
+            const data = await SeatBookingServices.getAllSeats(userInfoSession.selectedFlightNumber);
+            console.log("Seat Info from Backend: ", data);
+        }
+        seatsInformation();
+    }, []);
+
     const bookedSeats = ['B2', 'E5', 'F3'];
 
     const seatLayout = [
-        { class: 'Business Class', seats: ['B1', 'B2', 'B3', 'B4'] },
-        { class: 'First Class', seats: ['F1', 'F2', 'F3', 'F4'] },
+        {class: 'Business Class', seats: ['B1', 'B2', 'B3', 'B4']},
+        {class: 'First Class', seats: ['F1', 'F2', 'F3', 'F4']},
         {
             class: 'Economy Class',
             rows: [
@@ -38,14 +51,21 @@ const SeatSelection = () => {
         }
     ];
 
-    const handleSeatClick = (seatNumber) => {
+    const handleSeatClick = (seatNumber, seatClass) => {
         setSelectedSeat((prevSeat) => (prevSeat === seatNumber ? null : seatNumber));
+        setSelectedClass(seatClass);
     };
 
     const handlePayment = () => {
         if (selectedSeat && !bookedSeats.includes(selectedSeat)) {
             sessionStorage.setItem("selectedSeat", selectedSeat);
             sessionStorage.setItem("basePrice", SEAT_PRICE);
+            const fetchBookInformation = async () => {
+                const data = await SeatBookingServices.bookSeats(userInfoSession.selectedFlightNumber,
+                    userInfoSession.userId, selectedSeat, selectedClass, SEAT_PRICE);
+                console.log("Seat Info from Backend: ", data);
+            }
+            fetchBookInformation();
 
             setSelectPayment(true);
         } else {
@@ -61,24 +81,24 @@ const SeatSelection = () => {
 
     useEffect(() => {
         if (selectPayment) {
-            history.push("/payment", { selectedSeat, amountToBePaid });
+            history.push("/payment", {selectedSeat, amountToBePaid});
         }
     }, [selectPayment, history, selectedSeat, amountToBePaid]);
 
     return (
         <div className="seat-selection-container">
-            <h2 style={{ textAlign: 'center', marginBottom: '10px' }}>Select Your Seat</h2>
+            <h2 style={{textAlign: 'center', marginBottom: '10px'}}>Select Your Seat</h2>
             <div className="container">
                 {seatLayout.map((classSeats, classIndex) => (
-                    <div key={classIndex} style={{ textAlign: 'center' }}>
-                        <h3 style={{ display: 'inline-block', marginBottom: '10px' }}>{classSeats.class}</h3>
+                    <div key={classIndex} style={{textAlign: 'center'}}>
+                        <h3 style={{display: 'inline-block', marginBottom: '10px'}}>{classSeats.class}</h3>
                         {classSeats.seats && (
                             <div className="seat-row">
                                 {classSeats.seats.map((seat) => (
                                     <div
                                         key={seat}
                                         className={`seat ${selectedSeat === seat ? 'selected' : ''} ${isSeatBooked(seat) ? 'booked' : ''}`}
-                                        onClick={() => handleSeatClick(seat)}
+                                        onClick={() => handleSeatClick(seat, classSeats.class)}
                                     >
                                         {seat}
                                     </div>
@@ -91,7 +111,7 @@ const SeatSelection = () => {
                                     <div
                                         key={seat}
                                         className={`seat ${selectedSeat === seat ? 'selected' : ''} ${isSeatBooked(seat) ? 'booked' : ''}`}
-                                        onClick={() => handleSeatClick(seat)}
+                                        onClick={() => handleSeatClick(seat, classSeats.class)}
                                     >
                                         {seat}
                                     </div>
@@ -104,18 +124,19 @@ const SeatSelection = () => {
             <div className="selected-seats">
                 <p>Selected Seat: {selectedSeat || 'None'}</p>
             </div>
-            <br />
-            <div style={{ textAlign: 'center' }}>
+            <br/>
+            <div style={{textAlign: 'center'}}>
                 <Button
-                    style={{ backgroundColor: '#000', color: '#fff' }}
+                    style={{backgroundColor: '#000', color: '#fff'}}
                     onClick={handlePayment}
                 >
                     Confirm Seat
                 </Button>
                 <Button
-                    style={{ backgroundColor: '#ccc', color: '#000', marginLeft: '10px' }}
+                    style={{backgroundColor: '#ccc', color: '#000', marginLeft: '10px'}}
                     onClick={() => {
                         setSelectedSeat(null);
+                        setSelectedClass(null);
                         setAmountToBePaid(0);
                     }}
                 >
@@ -125,21 +146,21 @@ const SeatSelection = () => {
 
             {/* Custom Modal */}
             <Dialog open={openModal} onClose={handleModalClose}>
-                <DialogTitle style={{ textAlign: 'center', background: 'black', color: 'white', padding: '10px 0' }}>
-                    <ErrorOutline style={{ fontSize: '2rem', verticalAlign: 'middle', marginRight: '5px' }} />
+                <DialogTitle style={{textAlign: 'center', background: 'black', color: 'white', padding: '10px 0'}}>
+                    <ErrorOutline style={{fontSize: '2rem', verticalAlign: 'middle', marginRight: '5px'}}/>
                     Alert
                 </DialogTitle>
-                <DialogContent style={{ background: 'white', padding: '20px' }}>
-                    <DialogContentText style={{ fontSize: '16px', textAlign: 'center' }}>
+                <DialogContent style={{background: 'white', padding: '20px'}}>
+                    <DialogContentText style={{fontSize: '16px', textAlign: 'center'}}>
                         {isSeatBooked(selectedSeat) ? 'This seat is already booked' : 'Please select a seat before confirming'}
                     </DialogContentText>
                 </DialogContent>
-                <DialogActions style={{ justifyContent: 'center', background: 'white', padding: '10px' }}>
+                <DialogActions style={{justifyContent: 'center', background: 'white', padding: '10px'}}>
                     <Button
                         onClick={handleModalClose}
                         color="primary"
                         variant="contained"
-                        style={{ background: 'black', color: 'white' }}
+                        style={{background: 'black', color: 'white'}}
                     >
                         OK
                     </Button>

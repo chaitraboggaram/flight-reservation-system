@@ -120,7 +120,7 @@ function Payment() {
   return (
     <div>
       <div className="flight-details-container">
-        <h2 style={{ color: '#333', textAlign: 'center' }}>Cost Breakdown</h2>
+        <h2>Cost Breakdown</h2>
         <table>
           <tbody>
             <tr>
@@ -138,7 +138,8 @@ function Payment() {
               <td>₹{totalAmount}</td>
             </tr>
           </tbody>
-        <br/><br/>
+        </table>
+      </div>
 
       <div className="container">
         <div className="row">
@@ -273,8 +274,7 @@ function Payment() {
           </div>
         </div>
       </div>
-      </table>
-      </div>
+
       <CustomAlert
         title="Payment Successful"
         message="Your payment was successful!"
