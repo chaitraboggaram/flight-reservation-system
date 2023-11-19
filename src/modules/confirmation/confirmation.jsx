@@ -15,9 +15,9 @@ const Confirmation = () => {
   const lastName = userInfoSession.family_name;
   const emailAddress = userInfoSession.email;
   const selectedSeat = userInfoSession.selectedSeat;
-  const basePrice = sessionStorage.getItem("basePrice");
-  const totalAmount = sessionStorage.getItem("totalAmount");
+  const basePrice = userInfoSession.amountToBePaid;
   const seatPrice = userInfoSession.seatPrice;
+  const totalAmount = basePrice + seatPrice;
   const flightName = userInfoSession.selectedFlightNumber;
   const source = "";
   const destination = "";

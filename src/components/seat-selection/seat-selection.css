@@ -65,7 +65,7 @@ body, html {
     pointer-events: none;
 }
 
-.booked {
+.seat.booked {
     background-color: #000000;
     color: #ffffff;
     border-color: #000000;

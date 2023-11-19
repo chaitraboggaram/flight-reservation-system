@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import './seat-selection.css';
 import {
   Button,
   Dialog,
@@ -12,8 +11,7 @@ import { ErrorOutline } from '@material-ui/icons';
 import { useHistory } from 'react-router';
 import { useUserInfoSession } from '../header/user-context';
 import SeatBookingServices from '../../services/seat-booking-services';
-
-const SEAT_PRICE = 7000 + Math.floor(Math.random() * (2 * 249 + 1)) - 249;
+import './seat-selection.css';
 
 const SeatSelection = () => {
   const [selectedSeat, setSelectedSeat] = useState(null);
@@ -22,60 +20,81 @@ const SeatSelection = () => {
   const [openModal, setOpenModal] = useState(false);
   const [amountToBePaid, setAmountToBePaid] = useState(0);
   const [availableSeats, setAvailableSeats] = useState([]);
-  const [bookedSeats, setBookedSeats] = useState([]);
+  const [allSeats, setAllSeats] = useState([]);
+  const [seatPrices, setSeatPrices] = useState({});
 
   const history = useHistory();
 
-  const { userInfoSession, updateUserInfoSession } = useUserInfoSession();
+  const { userInfoSession, appendToUserInfoSession } = useUserInfoSession();
 
   useEffect(() => {
     const seatsInformation = async () => {
       const data = await SeatBookingServices.getAllSeats(
         userInfoSession.selectedFlightNumber
       );
-      console.log("Seat Info from Backend: ", data);
 
-      // Filter seats with passengerId === -1 for available seats
-      const availableSeats = data.filter(seat => seat.passengerId === -1);
-      const bookedSeats = data.filter(seat => seat.passengerId !== -1);
+      const availableSeats = data.filter((seat) => seat.passengerId === -1);
+      const bookedSeats = data.filter((seat) => seat.passengerId !== -1);
+
       setAvailableSeats(availableSeats);
-      setBookedSeats(bookedSeats);
+      setAllSeats([...availableSeats, ...bookedSeats]); // Combine both available and booked seats
+      setSeatPrices(generateSeatPrices(availableSeats));
     };
     seatsInformation();
   }, [userInfoSession.selectedFlightNumber]);
 
+  const generateSeatPrices = (seats) => {
+    const prices = {};
+    seats.forEach((seat) => {
+      prices[seat.seatNumber] =
+        seat.price + Math.floor(Math.random() * 399) - 199;
+    });
+    return prices;
+  };
+
+  const extractNumericPart = (seatNumber) => {
+    const numericPart = seatNumber.replace(/^\D+/g, '');
+    return parseInt(numericPart, 10);
+  };
+
   const handleSeatClick = (seatNumber, seatClass) => {
-    setSelectedSeat((prevSeat) => (prevSeat === seatNumber ? null : seatNumber));
+    setSelectedSeat((prevSeat) =>
+      prevSeat === seatNumber ? null : seatNumber
+    );
     setSelectedClass(seatClass);
+
   };
 
   const handlePayment = () => {
-    if (selectedSeat && availableSeats.map(seat => seat.seatNumber).includes(selectedSeat)) {
-      sessionStorage.setItem('selectedSeat', selectedSeat);
-      sessionStorage.setItem('basePrice', SEAT_PRICE);
+    if (
+      selectedSeat &&
+      availableSeats.map((seat) => seat.seatNumber).includes(selectedSeat)
+    ) {
       const fetchBookInformation = async () => {
         const data = await SeatBookingServices.bookSeats(
           userInfoSession.selectedFlightNumber,
           userInfoSession.userId,
           selectedSeat,
           selectedClass,
-          SEAT_PRICE
+          seatPrices[selectedSeat]
         );
-        console.log("Seat Info from Backend: ", data);
+        console.log('Seat booking info from Backend: ', data);
       };
       fetchBookInformation();
 
+      setAmountToBePaid(seatPrices[selectedSeat]);
       setSelectPayment(true);
+      appendToUserInfoSession(
+        {
+            selectedSeat: selectedSeat,
+            selectedClass: selectedClass,
+            amountToBePaid: seatPrices[selectedSeat],
+        }
+      );
     } else {
       setOpenModal(true);
     }
   };
-
-  const handleModalClose = () => {
-    setOpenModal(false);
-  };
-
-  const isSeatBooked = (seat) => bookedSeats.includes(seat);
 
   useEffect(() => {
     if (selectPayment) {
@@ -83,7 +102,12 @@ const SeatSelection = () => {
     }
   }, [selectPayment, history, selectedSeat, amountToBePaid]);
 
-  // Function to get class based on seat number
+  const handleModalClose = () => {
+    setOpenModal(false);
+  };
+
+  const isSeatBooked = (seat) => seat && seat.passengerId !== -1;
+
   const getClassFromSeatNumber = (seatNumber) => {
     if (seatNumber.startsWith('F')) {
       return 'First Class';
@@ -95,15 +119,7 @@ const SeatSelection = () => {
     return 'Unknown Class';
   };
 
-  // Organize seats by class and rows
-  const organizedSeats = availableSeats.reduce((acc, seat) => {
-    const seatClass = getClassFromSeatNumber(seat.seatNumber);
-    if (!acc[seatClass]) {
-      acc[seatClass] = [];
-    }
-    acc[seatClass].push(seat);
-    return acc;
-  }, {});
+  const sortedClasses = ['First Class', 'Business Class', 'Economy Class'];
 
   return (
     <div className="seat-selection-container">
@@ -111,28 +127,44 @@ const SeatSelection = () => {
         Select Your Seat
       </h2>
       <div className="container">
-        {/* Render seat layout here */}
-        {Object.entries(organizedSeats).map(([classType, seats]) => (
-          <div key={classType} style={{ textAlign: 'center' }}>
+        {sortedClasses.map((classType) => (
+          <div
+            key={classType}
+            style={{ textAlign: 'center', marginBottom: '20px' }}
+          >
             <h3>{classType}</h3>
             <div className="seat-row">
-              {seats.map(seat => (
-                <div
-                  key={seat.seatNumber}
-                  className={`seat ${selectedSeat === seat.seatNumber ? 'selected' : ''} ${
-                    isSeatBooked(seat.seatNumber) ? 'booked' : ''
-                  }`}
-                  onClick={() => handleSeatClick(seat.seatNumber, seat.seatClass)}
-                >
-                  {seat.seatNumber}
-                </div>
-              ))}
+              {allSeats
+                .filter(
+                  (seat) => getClassFromSeatNumber(seat.seatNumber) === classType
+                )
+                .sort((a, b) =>
+                  extractNumericPart(a.seatNumber) -
+                  extractNumericPart(b.seatNumber)
+                )
+                .map((seat) => (
+                  <div
+                    key={seat.seatNumber}
+                    className={`seat ${
+                      selectedSeat === seat.seatNumber ? 'selected' : ''
+                    } ${isSeatBooked(seat) ? 'booked' : ''}`}
+                    onClick={() =>
+                      handleSeatClick(seat.seatNumber, seat.seatClass)
+                    }
+                  >
+                    {seat.seatNumber}
+                    <br />
+                  </div>
+                ))}
             </div>
           </div>
         ))}
       </div>
       <div className="selected-seats">
-        <p>Selected Seat: {selectedSeat || 'None'}</p>
+        <p>{`Selected Seat: ${selectedSeat || 'None'}`}</p>
+        {selectedSeat && (
+          <p>{`Cost: ₹${seatPrices[selectedSeat]}`}</p>
+        )}
       </div>
       <br />
       <div style={{ textAlign: 'center' }}>
@@ -153,37 +185,23 @@ const SeatSelection = () => {
           Clear Selection
         </Button>
       </div>
-
-      {/* Custom Modal */}
       <Dialog open={openModal} onClose={handleModalClose}>
-        <DialogTitle
-          style={{
-            textAlign: 'center',
-            background: 'black',
-            color: 'white',
-            padding: '10px 0',
-          }}
-        >
-          <ErrorOutline
-            style={{ fontSize: '2rem', verticalAlign: 'middle', marginRight: '5px' }}
-          />
+        <DialogTitle>
+          <ErrorOutline />
           Alert
         </DialogTitle>
-        <DialogContent style={{ background: 'white', padding: '20px' }}>
-          <DialogContentText style={{ fontSize: '16px', textAlign: 'center' }}>
+        <DialogContent>
+          <DialogContentText>
             {isSeatBooked(selectedSeat)
               ? 'This seat is already booked'
               : 'Please select a seat before confirming'}
           </DialogContentText>
         </DialogContent>
-        <DialogActions
-          style={{ justifyContent: 'center', background: 'white', padding: '10px' }}
-        >
+        <DialogActions>
           <Button
             onClick={handleModalClose}
             color="primary"
             variant="contained"
-            style={{ background: 'black', color: 'white' }}
           >
             OK
           </Button>
