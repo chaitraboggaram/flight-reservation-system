@@ -19,10 +19,12 @@ const Confirmation = () => {
   const seatPrice = userInfoSession.seatPrice;
   const totalAmount = basePrice + seatPrice;
   const flightName = userInfoSession.selectedFlightNumber;
-  const source = "";
-  const destination = "";
-  const dateOfJourney = "";
-  const timeOfJourney = "";
+  const departureCity = userInfoSession.departureCity;
+  const arrivalCity = userInfoSession.arrivalCity;
+  const departureDate = userInfoSession.departureDate;
+  const departureTime = userInfoSession.departureTime;
+  const arrivalDate = userInfoSession.arrivalDate;
+  const arrivalTime = userInfoSession.arrivalTime;
 
   return (
     <div className="confirmation-container">
@@ -50,20 +52,20 @@ const Confirmation = () => {
             <td className="confirmation-table-data second-column">{flightName}</td>
           </tr>
           <tr className="confirmation-table-row">
-            <td className="confirmation-table-header first-column">Source City</td>
-            <td className="confirmation-table-data second-column">{source}</td>
+            <td className="confirmation-table-header first-column">Departure City</td>
+            <td className="confirmation-table-data second-column">{departureCity}</td>
           </tr>
           <tr className="confirmation-table-row">
-            <td className="confirmation-table-header first-column">Destination City</td>
-            <td className="confirmation-table-data second-column">{destination}</td>
+            <td className="confirmation-table-header first-column">Arrival City</td>
+            <td className="confirmation-table-data second-column">{arrivalCity}</td>
           </tr>
           <tr className="confirmation-table-row">
-            <td className="confirmation-table-header first-column">Date of Journey</td>
-            <td className="confirmation-table-data second-column">{dateOfJourney}</td>
+            <td className="confirmation-table-header first-column">Departure Date and Time</td>
+            <td className="confirmation-table-data second-column">{departureDate} {departureTime}</td>
           </tr>
           <tr className="confirmation-table-row">
-            <td className="confirmation-table-header first-column">Time of Journey</td>
-            <td className="confirmation-table-data second-column">{timeOfJourney}</td>
+            <td className="confirmation-table-header first-column">Arrival Date and Time</td>
+            <td className="confirmation-table-data second-column">{arrivalDate} {arrivalTime}</td>
           </tr>
           <tr className="confirmation-table-row">
             <td className="confirmation-table-header first-column">Selected Seat</td>

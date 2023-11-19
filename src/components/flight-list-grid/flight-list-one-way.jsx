@@ -40,11 +40,18 @@ const FlightListOneWay = (props) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [loginDone, setLoginDone] = useState(false);
   const [flightSelected, setFlightSelected] = useState("");
+  const [departureCity, setDepartureCity] = useState("");
+  const [arrivalCity, setArrivalCity] = useState("");
+  const [departureDate, setDepartureDate] = useState("");
+  const [departureTime, setDepartureTime] = useState("");
+  const [arrivalDate, setArrivalDate] = useState("");
+  const [arrivalTime, setArrivalTime] = useState("");
+  
   const history = useHistory();
   let component = null;
 
   // Get session details from cache
-  const { userInfoSession, updateUserInfoSession } = useUserInfoSession();
+  const { userInfoSession, updateUserInfoSession, appendToUserInfoSession } = useUserInfoSession();
 
   useEffect(() => {
     if (userInfoSession) {
@@ -60,6 +67,12 @@ const FlightListOneWay = (props) => {
         updateUserInfoSession({
           ...userInfo,
           selectedFlightNumber: flightSelected,
+          departureCity: departureCity,
+          arrivalCity: arrivalCity,
+          departureDate: departureDate,
+          departureTime: departureTime,
+          arrivalDate: arrivalDate,
+          arrivalTime: arrivalTime,
         });
 
         // Redirect to /seat-selection
@@ -72,14 +85,25 @@ const FlightListOneWay = (props) => {
   });
   
 
-  const handleFlightSelection = async (selectedFlightNumber) => {
-    setFlightSelected(selectedFlightNumber);
+  const handleFlightSelection = async (flightDetail) => {
+    setFlightSelected(flightDetail.flightNumber);
+    setDepartureCity(flightDetail.departure);
+    setArrivalCity(flightDetail.arrival);
+    setDepartureDate(flightDetail.departureDate);
+    setDepartureTime(flightDetail.departureTime);
+    setArrivalTime(flightDetail.arrivalTime);
+    setArrivalDate(flightDetail.arrivalDate);
     if (!userInfoSession) {
-      await login();
+      login();
     } else {
-      updateUserInfoSession({
-        ...userInfoSession,
-        selectedFlightNumber: selectedFlightNumber
+      appendToUserInfoSession({
+        selectedFlightNumber: flightDetail.flightNumber,
+        departureCity: flightDetail.departure,
+        arrivalCity: flightDetail.arrival,
+        departureDate: flightDetail.departureDate,
+        departureTime: flightDetail.departureTime,
+        arrivalDate: flightDetail.arrivalDate,
+        arrivalTime: flightDetail.arrivalTime,
       })
       history.push("/seat-selection");
     }
@@ -148,7 +172,7 @@ const FlightListOneWay = (props) => {
                             <Button
                               variant="contained"
                               style={{ backgroundColor: "black", color: "white" }}
-                              onClick={() => handleFlightSelection(val.flightNumber)}
+                              onClick={() => handleFlightSelection(val)}
                             >
                               {`₹ ${val?.minimumSeatPrice + Math.floor(Math.random() * 399) - 199}`}
                             </Button>

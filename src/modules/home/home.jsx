@@ -15,6 +15,7 @@ const SeatSelection = lazy(() => import("../../components/seat-selection/seat-se
 const ManageBooking = lazy(() => import("../../modules/manage/manage"));
 const About = lazy(() => import("../../modules/about/about"));
 const Help = lazy(() => import("../../modules/help/help"));
+const Admin = lazy(() => import("../../modules/admin/admin"));
 
 const Home = () => {
   const [tabs, setTabs] = useState([
@@ -58,6 +59,11 @@ const Home = () => {
                       exact={true}
                       path={`/manage`}
                       component={ManageBooking}
+                    />
+                    <Route
+                      exact={true}
+                      path={`/admin`}
+                      component={Admin}
                     />
                     <Route
                       exact={true}
