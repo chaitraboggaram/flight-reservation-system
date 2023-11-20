@@ -2,11 +2,7 @@
 ![Alt text](public/BonVoyage.jpeg)
 <br>
 
-This project has been developed using Java Spring boot and ReactJS
-
-## Node/NPM Versions
-I'm running node v12.0.0 and npm v7.19.0 as I tinker, there's no plan to
-support older versions at the moment.
+This project has been developed using Java Spring boot and ReactJS and is running node v12.0.0 and npm v7.19.0
 <br>
 
 # Installation and Setup Instructions
@@ -27,9 +23,9 @@ In case of any errors (ensure the number of vulnerabilities is less than 10 - so
 
 Installing database component for react
 `npm install react-data-table-component`
-Landing page is `home.jsx`, add all routes in it
 
-<br>
+#### Landing page is `home.jsx`, add all routes in it
+<br/>
 
 # Creating google authentication
 1. Login to https://console.cloud.google.com/
@@ -43,3 +39,34 @@ Landing page is `home.jsx`, add all routes in it
 "http://127.0.0.1:3000/callback"
 "http://localhost:3000/callback"
 
+
+
+## Frontend Web Pages
+#### Flight Search Page
+![Alt text](<Flight Search.jpg>)
+
+#### Google Authentication for Secure Login
+![Alt text](<Google Authentication.jpg>)
+
+#### Seat Selection
+Black: Booked
+Green: Selected
+Gray: Available
+![Alt text](<Seat Selection.JPEG>) 
+
+#### Payment Page
+![Alt text](Payment.JPEG) 
+
+#### Flight Seat Booking Confirmation
+![Alt text](<Booking Confirmation.jpg>) 
+
+#### Manage Bookings
+![Alt text](<User All Bookings.JPEG>) 
+![Alt text](<Booking Details.jpg>) 
+![Alt text](<Edit Booking.jpg>) 
+
+#### Admin Pages
+![Alt text](<Admin All Flights.JPEG>) 
+![Alt text](<Reservation List for Flight.jpg>) 
+![Alt text](<Update Flight.JPEG>) 
+![Alt text](<Add Flight.JPEG>)  
