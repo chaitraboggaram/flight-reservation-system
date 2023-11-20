@@ -6,62 +6,43 @@ import {
   MenuItem,
   Select,
   TextareaAutosize,
-  Typography,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
-const getRandomNumber = () => {
-  return Math.floor(Math.random() * 1000000) + 1;
-};
-
 const useStyles = makeStyles((theme) => ({
   formControl: {
-    width: "60%",
-    marginBottom: theme.spacing(5),
+    width: "100%",
+    marginBottom: theme.spacing(2),
   },
   textarea: {
-    width: "60%",
+    width: "100%",
     height: "300px",
-    marginBottom: theme.spacing(5),
+    marginBottom: theme.spacing(2),
+    padding: '10px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
   },
   button: {
     marginTop: theme.spacing(2),
-    marginLeft: theme.spacing(-4),
+    backgroundColor: "black",
+    color: "white",
+    margin: '0 auto', // Center-justify the button
   },
 }));
 
-const Help = () => {
+const CenteredForm = () => {
   const classes = useStyles();
   const [issueType, setIssueType] = useState("");
   const [description, setDescription] = useState("");
-  const [randomNumber, setRandomNumber] = useState(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-
-  const handleDialogOpen = () => {
-    setDialogOpen(true);
-  };
-
-  const handleDialogClose = () => {
-    setDialogOpen(false);
-    setIssueType("");
-    setDescription("");
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const generatedNumber = getRandomNumber();
-    setRandomNumber(generatedNumber);
-    handleDialogOpen();
+    // Add your form submission logic here
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+      <form onSubmit={handleSubmit} style={{ width: '60%' }}>
         <FormControl className={classes.formControl}>
           <InputLabel id="issue-label">Issue*</InputLabel>
           <Select
@@ -74,7 +55,7 @@ const Help = () => {
             <MenuItem value="booking">Booking Issue</MenuItem>
             <MenuItem value="cancel">Cancel Issue</MenuItem>
             <MenuItem value="refund">Refund Issue</MenuItem>
-            <MenuItem value="refund">Airline Service Issue</MenuItem>
+            <MenuItem value="airline">Airline Service Issue</MenuItem>
             <MenuItem value="others">Others</MenuItem>
           </Select>
         </FormControl>
@@ -98,22 +79,8 @@ const Help = () => {
           Submit
         </Button>
       </form>
-
-      <Dialog open={dialogOpen} onClose={handleDialogClose}>
-        <DialogTitle>Issue Number: {randomNumber}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Issue will be addressed within 24 hours.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDialogClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
     </div>
   );
 };
 
-export default Help;
+export default CenteredForm;

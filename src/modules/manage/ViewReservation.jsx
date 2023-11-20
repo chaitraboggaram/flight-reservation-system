@@ -16,6 +16,7 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  DialogContentText,
 } from "@material-ui/core"; 
 import ManageReservationService from "../../services/ManageReservationService";
 import BookingService from "../../services/BookingService";
@@ -27,7 +28,6 @@ const ViewReservation = (props) => {
   const [bookingDetail, setBookingDetail] = useState();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [showUpdateMessage, setShowUpdateMessage] = useState(false);
   const [flightNumber, setFlightNumber] = useState();
   const [seats, setSeatDetails] = useState();
   const [originalSeatDetails, setOriginalSeatDetails] = useState();
@@ -38,6 +38,9 @@ const ViewReservation = (props) => {
     lastName: bookingDetail?.passenger.lastName || "",
     emailId: bookingDetail?.passenger.emailId || "",
   });
+
+  const [paymentConfirmationOpen, setPaymentConfirmationOpen] = useState(false);
+  const [paymentText, setPaymentText] = useState();
 
   const fetchData = () => {
     ManageReservationService.getOneReservation(bookingId, userId).then(
@@ -77,12 +80,6 @@ const ViewReservation = (props) => {
 
   const handleRedirect = () => {
     props.history.push(`/manage`);
-  };
-
-  const [openDialog, setOpenDialog] = useState(false);
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
   };
 
   const handleAddSeat = (seatNumber, seatClass, price) => {
@@ -191,6 +188,22 @@ const ViewReservation = (props) => {
         console.log("update reservation", res.data);
         setBookingDetail(res.data);
       });
+
+      if (
+        originalSeatDetails.price >
+        bookingDetail.passenger.flightDetails[0].seat.price
+      ) {
+        setPaymentText("Remaining balance will be credited to your account");
+      } else if (
+        originalSeatDetails.price <
+        bookingDetail.passenger.flightDetails[0].seat.price
+      ) {
+        setPaymentText("Remaining balance will be debited from your account");
+      } else {
+        setPaymentText("All changes are saved!");
+      }
+
+      setPaymentConfirmationOpen(true);
     } catch (error) {
       console.error("Error updating data:", error);
     }
@@ -200,6 +213,10 @@ const ViewReservation = (props) => {
     setShowConfirmation(true);
   };
 
+  const handleCloseDialog = () => {
+    setPaymentConfirmationOpen(false);
+  };
+  
   const handleConfirmDelete = (bookingId, userId) => {
     try {
       ManageReservationService.deleteReservation(bookingId, userId).then(
@@ -539,42 +556,48 @@ const ViewReservation = (props) => {
           No
         </Button>
       </DialogActions>
-
       </Dialog>
+      
       <Dialog
         open={showSuccessMessage}
         onClose={() => setShowSuccessMessage(false)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Success"}</DialogTitle>
+        <DialogTitle className="alert-title" id="alert-dialog-title">{" Success "}</DialogTitle>
         <DialogContent>
           <Typography variant="body1">
             Reservation deleted successfully!
           </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowSuccessMessage(false)} color="primary">
+        <DialogActions style={{ justifyContent: "center" }}>
+          <Button 
+          style={{ backgroundColor: "black", color: "white" }}
+          onClick={() => setShowSuccessMessage(false)} color="primary">
             Close
           </Button>
         </DialogActions>
       </Dialog>
 
+      {/*  */}
+
       <Dialog
-        open={showUpdateMessage}
-        onClose={() => setShowUpdateMessage(false)}
+        open={paymentConfirmationOpen}
+        onClose={handleCloseDialog}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Success"}</DialogTitle>
+        <DialogTitle className="alert-title" id="alert-dialog-title">
+          {"Changes Updated"}
+        </DialogTitle>
         <DialogContent>
-          <Typography variant="body1">
-            Reservation deleted successfully!
-          </Typography>
+          <DialogContentText id="alert-dialog-description">
+            {paymentText}
+          </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowSuccessMessage(false)} color="primary">
-            Close
+        <DialogActions style={{ justifyContent: "center" }}>
+          <Button style={{ backgroundColor: "black", color: "white" }} onClick={handleCloseDialog} color="primary">
+            OK
           </Button>
         </DialogActions>
       </Dialog>

@@ -24,6 +24,7 @@ const SeatSelection = () => {
   const [seatPrices, setSeatPrices] = useState({});
 
   const history = useHistory();
+  const isEconomyClass = (seat) => getClassFromSeatNumber(seat.seatNumber) === 'Economy Class';
 
   const { userInfoSession, appendToUserInfoSession } = useUserInfoSession();
 
@@ -142,18 +143,30 @@ const SeatSelection = () => {
                   extractNumericPart(a.seatNumber) -
                   extractNumericPart(b.seatNumber)
                 )
-                .map((seat) => (
-                  <div
-                    key={seat.seatNumber}
-                    className={`seat ${
-                      selectedSeat === seat.seatNumber ? 'selected' : ''
-                    } ${isSeatBooked(seat) ? 'booked' : ''}`}
-                    onClick={() =>
-                      handleSeatClick(seat.seatNumber, seat.seatClass)
-                    }
-                  >
-                    {seat.seatNumber}
-                    <br />
+                .reduce((rows, seat, index) => {
+                  const rowIndex = Math.floor(index / (classType === 'Economy Class' ? 4 : 3));
+                  if (!rows[rowIndex]) {
+                    rows[rowIndex] = [];
+                  }
+                  rows[rowIndex].push(seat);
+                  return rows;
+                }, [])
+                .map((row, rowIndex) => (
+                  <div key={rowIndex} className={`seat-${classType.toLowerCase()}-row`}>
+                    {row.map((seat) => (
+                      <div
+                        key={seat.seatNumber}
+                        className={`seat ${
+                          selectedSeat === seat.seatNumber ? 'selected' : ''
+                        } ${isSeatBooked(seat) ? 'booked' : ''}`}
+                        onClick={() =>
+                          handleSeatClick(seat.seatNumber, seat.seatClass)
+                        }
+                      >
+                        {seat.seatNumber}
+                        <br />
+                      </div>
+                    ))}
                   </div>
                 ))}
             </div>

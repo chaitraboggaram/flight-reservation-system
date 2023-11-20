@@ -25,7 +25,9 @@ To Visit App:
 In case of any errors (ensure the number of vulnerabilities is less than 10 - sometimes running twice helps!)
 `npm audit fix --force`
 
-Landing page is home.jsx, add all routes in it
+Installing database component for react
+`npm install react-data-table-component`
+Landing page is `home.jsx`, add all routes in it
 
 <br>
 
