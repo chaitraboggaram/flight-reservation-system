@@ -15,7 +15,9 @@ const ManageBooking = lazy(() => import("../manage/RetrieveBooking"));
 const ViewReservation = lazy(() => import("../manage/ViewReservation"));
 const About = lazy(() => import("../../modules/about/about"));
 const Help = lazy(() => import("../../modules/help/help"));
-const Admin = lazy(() => import("../../modules/admin/admin"));
+const Admin = lazy(() => import("../admin/admin"));
+const AdminEditFlight = lazy(() => import("../admin/AdminEditFlight"));
+const AdminAddFlight = lazy(() => import("../admin/AdminAddFlight"));
 
 const Home = () => {
   const { userInfoSession } = useUserInfoSession();
@@ -34,12 +36,13 @@ const Home = () => {
     { label: 'Manage', path: '/manage', show: shouldShowManageTab() },
     { label: 'About', path: '/about', show: true },
     { label: 'Help', path: '/help', show: true },
-    { label: 'Admin', path: '/admin', show: false },
+    { label: 'Admin', path: '/admin', show: true },
   ]);
 
   const updateAdminTab = () => {
     const updatedTabs = [...tabs];
     const adminTab = updatedTabs.find((tab) => tab.label === 'Admin');
+    console.log("in admin tab: %d", isAdmin)
     if (adminTab) {
       adminTab.show = isAdmin === 1;
     }
@@ -124,6 +127,21 @@ const Home = () => {
                       exact={true}
                       path={`/view-reservation/:bookingId/:userId`}
                       component={ViewReservation}
+                    />
+                    <Route
+                      exact={true}
+                      path={`/admin`}
+                      component={Admin}
+                    />
+                    <Route
+                      exact={true}
+                      path={`/edit-flight/:flightNumber`}
+                      component={AdminEditFlight}
+                    />
+                    <Route
+                      exact={true}
+                      path={`/add-flight/`}
+                      component={AdminAddFlight}
                     />
                   </Switch>
                 </Suspense>

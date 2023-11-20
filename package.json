@@ -21,6 +21,7 @@
     "props-type": "1.0.1",
     "react": "^16.14.0",
     "react-bootstrap": "1.6.1",
+    "react-data-table-component": "^7.5.4",
     "react-dom": "^16.14.0",
     "react-redux": "7.2.4",
     "react-router": "5.2.0",
