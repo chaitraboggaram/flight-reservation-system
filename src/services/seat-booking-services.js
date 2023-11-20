@@ -59,7 +59,7 @@ export default class SeatBookingServices {
             departureTime: departureTime,
             arrivalDate: arrivalDate,
             arrivalTime: arrivalTime,
-            seatAvailability: seatAvailability
+            seatAvailability: 30
         }
 
         return axios.post(selectFlightURL, selectFlightRequest)

@@ -19,7 +19,7 @@ import {
 
 import { useGoogleLogin } from "@react-oauth/google";
 import GoogleServiceSingleton from "../../services/google-service-singleton";
-import {useUserInfoSession} from "../header/user-context";
+import { useUserInfoSession } from "../header/user-context";
 import SeatBookingServices from "../../services/seat-booking-services";
 
 const useStyles = makeStyles(() => ({
@@ -47,7 +47,9 @@ const FlightListOneWay = (props) => {
   const [departureTime, setDepartureTime] = useState("");
   const [arrivalDate, setArrivalDate] = useState("");
   const [arrivalTime, setArrivalTime] = useState("");
-  
+
+  const [randomNumber, setRandomNumber] = useState(0); // Add this state for storing the random number
+
   const history = useHistory();
   let component = null;
 
@@ -95,7 +97,6 @@ const FlightListOneWay = (props) => {
       }
     },
   });
-  
 
   const handleFlightSelection = async (flightDetail) => {
     setFlightSelected(flightDetail.flightNumber);
@@ -141,6 +142,7 @@ const FlightListOneWay = (props) => {
           {flightList.result
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             .map((val, index) => {
+              const randomPrice = val?.minimumSeatPrice + Math.floor(randomNumber * 399) - 199;
               return (
                 <TableRow key={index}>
                   <TableCell>
@@ -197,7 +199,7 @@ const FlightListOneWay = (props) => {
                               style={{ backgroundColor: "black", color: "white" }}
                               onClick={() => handleFlightSelection(val)}
                             >
-                              {`₹ ${val?.minimumSeatPrice + Math.floor(Math.random() * 399) - 199}`}
+                              {`₹ ${randomPrice}`}
                             </Button>
                           </Grid>
                         </Grid>
@@ -227,6 +229,10 @@ const FlightListOneWay = (props) => {
   } else if (flightList?.error) {
     component = <Typography>{`Unable to fetch Data...`}</Typography>;
   }
+
+  useEffect(() => {
+    setRandomNumber(Math.random()); // Generate the random number once
+  }, []);
 
   return (
     <Grid container>

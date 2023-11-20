@@ -33,7 +33,7 @@
 }
 
 .confirmation-table .first-column {
-  width: 35%;
+  width: 20%;
   font-size: 14px;
 }
 
@@ -70,3 +70,59 @@
   text-align: center;
 }
 
+/* Add this to your existing CSS */
+
+.alert-title {
+  background-color: #000;
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+  font-size: 18px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.alert-content {
+  padding: 20px;
+  text-align: center;
+}
+
+.alert-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.alert-actions button {
+  margin: 0 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px; /* Adjust font size for better visibility */
+}
+
+.alert-actions button.primary {
+  background-color: #000;
+  color: #fff;
+}
+
+.alert-actions button.secondary {
+  background-color: #ccc;
+  color: #000;
+}
+
+.MuiDialog-paper {
+  width: 400px; /* Set the width of the dialog */
+  border-radius: 10px;
+}
+
+.MuiDialogTitle-root {
+  text-align: center;
+  font-size: 20px;
+}
+
+.MuiDialogContent-root {
+  padding: 16px;
+  text-align: center;
+}

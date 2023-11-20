@@ -16,7 +16,7 @@ import {
   TableRow,
   TableCell,
   TableBody,
-} from "@material-ui/core";
+} from "@material-ui/core"; 
 import ManageReservationService from "../../services/ManageReservationService";
 import BookingService from "../../services/BookingService";
 import "./view-reservation.css";
@@ -76,6 +76,12 @@ const ViewReservation = (props) => {
 
   const handleRedirect = () => {
     props.history.push(`/manage`);
+  };
+
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
   };
 
   const handleAddSeat = (seatNumber, seatClass, price) => {
@@ -302,7 +308,7 @@ const ViewReservation = (props) => {
             value={editedFields.emailId}
             onChange={(e) => handleFieldChange("emailId", e.target.value)}
             defaultValue={bookingDetail.passenger.emailId}
-            style={{ fontSize: "14px", width: "500px", height: "30px" }}
+            style={{ fontSize: "14px", width: "350px", height: "30px" }}
           />               
           ) : (
             bookingDetail.passenger.emailId
@@ -320,7 +326,7 @@ const ViewReservation = (props) => {
               value={editedFields.firstName}
               onChange={(e) => handleFieldChange("firstName", e.target.value)}
               defaultValue={bookingDetail.passenger.firstName}
-              style={{ fontSize: "14px", width: "500px", height: "30px" }}
+              style={{ fontSize: "14px", width: "350px", height: "30px" }}
             />
           ) : (
             bookingDetail.passenger.firstName
@@ -338,7 +344,7 @@ const ViewReservation = (props) => {
               value={editedFields.lastName}
               onChange={(e) => handleFieldChange("lastName", e.target.value)}
               defaultValue={bookingDetail.passenger.lastName}
-              style={{ fontSize: "14px", width: "500px", height: "30px" }}
+              style={{ fontSize: "14px", width: "350px", height: "30px" }}
             />
           ) : (
             bookingDetail.passenger.lastName
@@ -386,7 +392,7 @@ const ViewReservation = (props) => {
                   display: showSaveCancel ? "none" : "block",
                 }}
               >
-                back to reservations
+                Back to reservations
               </Button>
               <Button
                 variant="contained"
@@ -412,7 +418,7 @@ const ViewReservation = (props) => {
                   display: showSaveCancel ? "block" : "none",
                 }}
               >
-                save changes
+                Save changes
               </Button>
               <Button
                 variant="contained"
@@ -443,7 +449,7 @@ const ViewReservation = (props) => {
               <>
               <div style={{ textAlign: "center", marginBottom: "20px" }}>
                 <br/><br/><br/>
-                <Typography variant="h4">Available Seats</Typography>
+                <Typography variant="h4">Upgrade Seats</Typography>
               </div>
                 <TableContainer component={Paper}>
                   <Table>
@@ -504,30 +510,35 @@ const ViewReservation = (props) => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
+        <DialogTitle className="alert-title" id="alert-dialog-title">{" Confirm Delete "}</DialogTitle>
         <DialogContent>
           <Typography variant="body1">
             Are you sure you want to delete this reservation?
           </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelDelete} color="primary" style={{ backgroundColor: "black", color: "white" }}
->
-            No
-          </Button>
-          <Button
-            onClick={() =>
-              handleConfirmDelete(
-                bookingDetail.bookingId,
-                bookingDetail.passenger.userId
-              )
-            }
-            color="primary"
-            autoFocus
-          >
-            Yes
-          </Button>
-        </DialogActions>
+        <DialogActions style={{ justifyContent: "center" }}>
+        <Button
+          style={{ backgroundColor: "black", color: "white" }}
+          onClick={() =>
+            handleConfirmDelete(
+              bookingDetail.bookingId,
+              bookingDetail.passenger.userId
+            )
+          }
+          color="primary"
+          autoFocus
+        >
+          Yes
+        </Button>
+        <Button
+          onClick={handleCancelDelete}
+          color="primary"
+          style={{ backgroundColor: "black", color: "white" }}
+        >
+          No
+        </Button>
+      </DialogActions>
+
       </Dialog>
       <Dialog
         open={showSuccessMessage}
