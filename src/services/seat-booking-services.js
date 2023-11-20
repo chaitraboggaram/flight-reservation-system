@@ -48,4 +48,27 @@ export default class SeatBookingServices {
                 return null;
             })
     }
+
+    static selectFlight = (userId, flightNumber, departure, arrival, departureDate, departureTime, arrivalDate, arrivalTime) => {
+        const selectFlightURL = LOCAL_BACKEND_BASE_URL + 'booking/bookFlights/' + userId;
+        const selectFlightRequest = {
+            flightNumber: flightNumber,
+            departure: departure,
+            arrival: arrival,
+            departureDate: departureDate,
+            departureTime: departureTime,
+            arrivalDate: arrivalDate,
+            arrivalTime: arrivalTime,
+            seatAvailability: 0
+        }
+
+        return axios.post(selectFlightURL, selectFlightRequest)
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.log("Error in Backend call, sending back empty select flight", error);
+                return null;
+            })
+    }
 }

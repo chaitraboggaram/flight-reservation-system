@@ -11,7 +11,8 @@ const FlightSearch = lazy(() => import("../search/flight-search"));
 const FlightBooking = lazy(() => import("../booking/flight-booking"));
 const Payment = lazy(() => import("../booking/payment"));
 const SeatSelection = lazy(() => import("../../components/seat-selection/seat-selection"));
-const ManageBooking = lazy(() => import("../../modules/manage/manage"));
+const ManageBooking = lazy(() => import("../manage/RetrieveBooking"));
+const ViewReservation = lazy(() => import("../manage/ViewReservation"));
 const About = lazy(() => import("../../modules/about/about"));
 const Help = lazy(() => import("../../modules/help/help"));
 const Admin = lazy(() => import("../../modules/admin/admin"));
@@ -118,6 +119,11 @@ const Home = () => {
                       exact={true}
                       path={`/seat-selection`}
                       component={SeatSelection}
+                    />
+                    <Route
+                      exact={true}
+                      path={`/view-reservation/:bookingId/:userId`}
+                      component={ViewReservation}
                     />
                   </Switch>
                 </Suspense>

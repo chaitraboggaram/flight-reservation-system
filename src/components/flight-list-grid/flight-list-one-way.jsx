@@ -20,6 +20,7 @@ import {
 import { useGoogleLogin } from "@react-oauth/google";
 import GoogleServiceSingleton from "../../services/google-service-singleton";
 import {useUserInfoSession} from "../header/user-context";
+import SeatBookingServices from "../../services/seat-booking-services";
 
 const useStyles = makeStyles(() => ({
   textAlign: {
@@ -74,6 +75,17 @@ const FlightListOneWay = (props) => {
           arrivalDate: arrivalDate,
           arrivalTime: arrivalTime,
         });
+        const selectFlightData = await SeatBookingServices.selectFlight(
+          userInfo.userId,
+          flightSelected,
+          departureCity,
+          arrivalCity,
+          departureDate,
+          departureTime,
+          arrivalDate,
+          arrivalTime,
+        )
+        console.log("Select flight response: ", selectFlightData);
 
         // Redirect to /seat-selection
         history.push("/seat-selection");
@@ -96,6 +108,17 @@ const FlightListOneWay = (props) => {
     if (!userInfoSession) {
       login();
     } else {
+      const selectFlightData = await SeatBookingServices.selectFlight(
+        userInfoSession.userId,
+        flightDetail.flightNumber,
+        flightDetail.departure,
+        flightDetail.arrival,
+        flightDetail.departureDate,
+        flightDetail.departureTime,
+        flightDetail.arrivalDate,
+        flightDetail.arrivalTime,
+      )
+      console.log("Select flight response: ", selectFlightData);
       appendToUserInfoSession({
         selectedFlightNumber: flightDetail.flightNumber,
         departureCity: flightDetail.departure,
