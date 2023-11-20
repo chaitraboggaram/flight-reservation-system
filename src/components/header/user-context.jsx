@@ -16,8 +16,24 @@ export const UserSessionProvider = ({ children }) => {
     sessionStorage.removeItem('userInfo');
   }
 
+  const appendToUserInfoSession = (info) => {
+    const newUserInfo = {
+      ...userInfoSession,
+      ...info,
+    }
+    updateUserInfoSession(newUserInfo);
+  }
+
+  const removeItemFromUserInfoSession = (key) => {
+    const newUserInfo = {
+      ...userInfoSession,
+    }
+    delete newUserInfo.key;
+    updateUserInfoSession(newUserInfo);
+  }
+
   return (
-    <UserContext.Provider value={{ userInfoSession, updateUserInfoSession, removeUserInfoSession }}>
+    <UserContext.Provider value={{ userInfoSession, updateUserInfoSession, removeUserInfoSession, appendToUserInfoSession }}>
       {children}
     </UserContext.Provider>
   );

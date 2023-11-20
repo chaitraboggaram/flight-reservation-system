@@ -19,7 +19,8 @@ import {
 
 import { useGoogleLogin } from "@react-oauth/google";
 import GoogleServiceSingleton from "../../services/google-service-singleton";
-import {useUserInfoSession} from "../header/user-context";
+import { useUserInfoSession } from "../header/user-context";
+import SeatBookingServices from "../../services/seat-booking-services";
 
 const useStyles = makeStyles(() => ({
   textAlign: {
@@ -39,11 +40,21 @@ const FlightListOneWay = (props) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [loginDone, setLoginDone] = useState(false);
+  const [flightSelected, setFlightSelected] = useState("");
+  const [departureCity, setDepartureCity] = useState("");
+  const [arrivalCity, setArrivalCity] = useState("");
+  const [departureDate, setDepartureDate] = useState("");
+  const [departureTime, setDepartureTime] = useState("");
+  const [arrivalDate, setArrivalDate] = useState("");
+  const [arrivalTime, setArrivalTime] = useState("");
+
+  const [randomNumber, setRandomNumber] = useState(0); // Add this state for storing the random number
+
   const history = useHistory();
   let component = null;
 
   // Get session details from cache
-  const { userInfoSession, updateUserInfoSession } = useUserInfoSession();
+  const { userInfoSession, updateUserInfoSession, appendToUserInfoSession } = useUserInfoSession();
 
   useEffect(() => {
     if (userInfoSession) {
@@ -55,10 +66,28 @@ const FlightListOneWay = (props) => {
     onSuccess: async (tokenResponse) => {
       try {
         const userInfo = await GoogleServiceSingleton.getUserInfo(tokenResponse.access_token);
-        console.log("Name: ", userInfo.name);
-        console.log("Email: ", userInfo.email);
         setLoginDone(true);
-        updateUserInfoSession(JSON.stringify(userInfo));
+        updateUserInfoSession({
+          ...userInfo,
+          selectedFlightNumber: flightSelected,
+          departureCity: departureCity,
+          arrivalCity: arrivalCity,
+          departureDate: departureDate,
+          departureTime: departureTime,
+          arrivalDate: arrivalDate,
+          arrivalTime: arrivalTime,
+        });
+        const selectFlightData = await SeatBookingServices.selectFlight(
+          userInfo.userId,
+          flightSelected,
+          departureCity,
+          arrivalCity,
+          departureDate,
+          departureTime,
+          arrivalDate,
+          arrivalTime,
+        )
+        console.log("Select flight response: ", selectFlightData);
 
         // Redirect to /seat-selection
         history.push("/seat-selection");
@@ -68,12 +97,38 @@ const FlightListOneWay = (props) => {
       }
     },
   });
-  
 
-  const handleFlightSelection = async (event) => {
+  const handleFlightSelection = async (flightDetail) => {
+    setFlightSelected(flightDetail.flightNumber);
+    setDepartureCity(flightDetail.departure);
+    setArrivalCity(flightDetail.arrival);
+    setDepartureDate(flightDetail.departureDate);
+    setDepartureTime(flightDetail.departureTime);
+    setArrivalTime(flightDetail.arrivalTime);
+    setArrivalDate(flightDetail.arrivalDate);
     if (!userInfoSession) {
-      await login();
+      login();
     } else {
+      const selectFlightData = await SeatBookingServices.selectFlight(
+        userInfoSession.userId,
+        flightDetail.flightNumber,
+        flightDetail.departure,
+        flightDetail.arrival,
+        flightDetail.departureDate,
+        flightDetail.departureTime,
+        flightDetail.arrivalDate,
+        flightDetail.arrivalTime,
+      )
+      console.log("Select flight response: ", selectFlightData);
+      appendToUserInfoSession({
+        selectedFlightNumber: flightDetail.flightNumber,
+        departureCity: flightDetail.departure,
+        arrivalCity: flightDetail.arrival,
+        departureDate: flightDetail.departureDate,
+        departureTime: flightDetail.departureTime,
+        arrivalDate: flightDetail.arrivalDate,
+        arrivalTime: flightDetail.arrivalTime,
+      })
       history.push("/seat-selection");
     }
   };
@@ -87,6 +142,7 @@ const FlightListOneWay = (props) => {
           {flightList.result
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             .map((val, index) => {
+              const randomPrice = val?.minimumSeatPrice + Math.floor(randomNumber * 399) - 199;
               return (
                 <TableRow key={index}>
                   <TableCell>
@@ -124,7 +180,7 @@ const FlightListOneWay = (props) => {
                             <Typography variant="caption">
                               {val.noOfStops === "0"
                                 ? `No Stops`
-                                : `${val.noOfStops} Stops`}
+                                : `Non-Stop`}
                             </Typography>
                           </Grid>
                           <Grid
@@ -141,11 +197,9 @@ const FlightListOneWay = (props) => {
                             <Button
                               variant="contained"
                               style={{ backgroundColor: "black", color: "white" }}
-                              onClick={handleFlightSelection}
+                              onClick={() => handleFlightSelection(val)}
                             >
-                              {/*TODO: Add back min price if API returns it*/}
-                              {/*{`Rs. ${val?.price}`}*/}
-                              SELECT SEATS
+                              {`₹ ${randomPrice}`}
                             </Button>
                           </Grid>
                         </Grid>
@@ -175,6 +229,10 @@ const FlightListOneWay = (props) => {
   } else if (flightList?.error) {
     component = <Typography>{`Unable to fetch Data...`}</Typography>;
   }
+
+  useEffect(() => {
+    setRandomNumber(Math.random()); // Generate the random number once
+  }, []);
 
   return (
     <Grid container>

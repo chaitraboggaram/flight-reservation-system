@@ -17,7 +17,7 @@ const Header = ({ tabs, onShowTab }) => {
 
   useEffect(() => {
     if (userInfoSession) {
-      setUserInfo(JSON.parse(userInfoSession));
+      setUserInfo(userInfoSession);
       setIsLoggedIn(true);
       setMenuOpen(false);
       setAnchorEl(null);
@@ -30,7 +30,7 @@ const Header = ({ tabs, onShowTab }) => {
         (userInfo) => {
           setUserInfo(userInfo);
           setIsLoggedIn(true);
-          updateUserInfoSession(JSON.stringify(userInfo));
+          updateUserInfoSession(userInfo);
         }
       );
     },

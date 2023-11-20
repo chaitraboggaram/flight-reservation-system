@@ -1,29 +1,60 @@
-import React, {lazy, Suspense, useState} from "react";
-
+import React, { lazy, Suspense, useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Grid, CssBaseline, Container, Toolbar } from "@material-ui/core";
-
 import "./home.css";
 
 import Header from "../../components/header/header";
 import ErrorBoundaries from "../../components/error-boundaries/error-boundaries";
+import { useUserInfoSession } from "../../components/header/user-context";
 const Confirmation = lazy(() => import("../confirmation/confirmation"));
 const FlightSearch = lazy(() => import("../search/flight-search"));
 const FlightBooking = lazy(() => import("../booking/flight-booking"));
 const Payment = lazy(() => import("../booking/payment"));
 const SeatSelection = lazy(() => import("../../components/seat-selection/seat-selection"));
-const ManageBooking = lazy(() => import("../../modules/manage/manage"));
+const ManageBooking = lazy(() => import("../manage/RetrieveBooking"));
+const ViewReservation = lazy(() => import("../manage/ViewReservation"));
 const About = lazy(() => import("../../modules/about/about"));
 const Help = lazy(() => import("../../modules/help/help"));
+const Admin = lazy(() => import("../../modules/admin/admin"));
 
 const Home = () => {
+  const { userInfoSession } = useUserInfoSession();
+  let isAdmin = 0;
+
+  if (userInfoSession) {
+    isAdmin = userInfoSession.admin;
+  }
+
+  const shouldShowManageTab = () => {
+    return userInfoSession ? true : false;
+  };
+
   const [tabs, setTabs] = useState([
     { label: 'Book', path: '/', show: true },
-    { label: 'Manage', path: '/manage', show: true },
+    { label: 'Manage', path: '/manage', show: shouldShowManageTab() },
     { label: 'About', path: '/about', show: true },
     { label: 'Help', path: '/help', show: true },
     { label: 'Admin', path: '/admin', show: false },
   ]);
+
+  const updateAdminTab = () => {
+    const updatedTabs = [...tabs];
+    const adminTab = updatedTabs.find((tab) => tab.label === 'Admin');
+    if (adminTab) {
+      adminTab.show = isAdmin === 1;
+    }
+
+    const manageTab = updatedTabs.find((tab) => tab.label === 'Manage');
+    if (manageTab) {
+      manageTab.show = shouldShowManageTab();
+    }
+
+    setTabs(updatedTabs);
+  };
+
+  useEffect(() => {
+    updateAdminTab();
+  }, [isAdmin, userInfoSession]);
 
   const handleShowTab = (tabIndex) => {
     const updatedTabs = [...tabs];
@@ -35,7 +66,7 @@ const Home = () => {
     <div className="root">
       <CssBaseline />
       <Router>
-        <Header tabs={tabs} onShowTab={handleShowTab}/>
+        <Header tabs={tabs} onShowTab={handleShowTab} />
         <Toolbar />
         <Container>
           <Grid container styles={{ marginTop: 100 }}>
@@ -61,6 +92,11 @@ const Home = () => {
                     />
                     <Route
                       exact={true}
+                      path={`/admin`}
+                      component={Admin}
+                    />
+                    <Route
+                      exact={true}
                       path={`/about`}
                       component={About}
                     />
@@ -80,9 +116,14 @@ const Home = () => {
                       component={Confirmation}
                     />
                     <Route
-                        exact={true}
-                        path={`/seat-selection`}
-                        component={SeatSelection}
+                      exact={true}
+                      path={`/seat-selection`}
+                      component={SeatSelection}
+                    />
+                    <Route
+                      exact={true}
+                      path={`/view-reservation/:bookingId/:userId`}
+                      component={ViewReservation}
                     />
                   </Switch>
                 </Suspense>

@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { useHistory, useLocation } from 'react-router';
 import { Button } from "@material-ui/core";
-
-import CustomAlert from '../../components/custom-alert'; // Import the custom alert component
+import CustomAlert from '../../components/custom-alert';
+import { useUserInfoSession } from "../../components/header/user-context";
+import SeatBookingServices from "../../services/seat-booking-services";
 
 import './payment.css';
+
+const seatPrice = Math.floor(Math.random() * 101);
 
 function Payment() {
   const history = useHistory();
@@ -17,14 +20,13 @@ function Payment() {
   const [cvvError, setCVVError] = useState('');
   const [expiryError, setExpiryError] = useState('');
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [paymentError, setPaymentError] = useState(false);
+  const { userInfoSession, appendToUserInfoSession } = useUserInfoSession();
+  const basePrice = userInfoSession.amountToBePaid;
+  const totalAmount = basePrice + seatPrice;
+  // const location = useLocation();
 
-  const selectedSeat = sessionStorage.getItem("selectedSeat");
-  const basePrice = sessionStorage.getItem("basePrice");
-
-  // Recieving data from seat-selection page
-  const location = useLocation();
-
-  const handlePayment = (event) => {
+  const handlePayment = async (event) => {
     event.preventDefault();
 
     const cardNumberPattern = /^\d{16}$/;
@@ -71,39 +73,59 @@ function Payment() {
       return false;
     }
 
-    setPaymentSuccess(true);
-    return true;
+    const getClassFromSeatNumber = (seatNumber) => {
+      if (seatNumber && seatNumber.startsWith) { // Check if seatNumber is defined and has a startsWith method
+        if (seatNumber.startsWith('F')) {
+          return 'First Class';
+        } else if (seatNumber.startsWith('B')) {
+          return 'Business Class';
+        } else if (seatNumber.startsWith('E')) {
+          return 'Economy Class';
+        }
+      }
+      return 'Unknown Class';
+    };
+
+    const fetchReservationResponse = async () => {
+      const reservationResponse = await SeatBookingServices.createReservation(
+        userInfoSession.selectedFlightNumber, 
+        userInfoSession.userId, 
+        userInfoSession.selectedSeat, 
+        userInfoSession.amountToBePaid
+        );
+        console.log('Seat reservation info from Backend: ', reservationResponse);
+        if (reservationResponse.bookingId) {
+          setPaymentSuccess(true);
+        } else {
+          setPaymentError(true);
+        }
+    }
+    fetchReservationResponse();
+    appendToUserInfoSession({
+      seatPrice: seatPrice,
+    })
   };
 
-  const calculateSeatPrice = (selectedSeat) => {
-    if (selectedSeat) {
-      const seatNumber = parseInt(selectedSeat.substring(1), 10);
-  
-      if (seatNumber >= 1 && seatNumber <= 4 && selectedSeat.charAt(0) === 'B') {
-        return Math.floor(Math.random() * (1500 - 1000 + 1)) + 2000;
-      } else if (seatNumber >= 1 && seatNumber <= 4 && selectedSeat.charAt(0) === 'F') {
-        return Math.floor(Math.random() * (800 - 500 + 1)) + 800;
-      } else if (['E1', 'E6', 'E7', 'E12', 'E13', 'E18', 'E19', 'E24', 'E25', 'E30'].includes(selectedSeat)) {
-        return Math.floor(Math.random() * (300 - 200 + 1)) + 200;
+  const getClassFromSeatNumber = (seatNumber) => {
+    if (seatNumber && seatNumber.startsWith) { // Check if seatNumber is defined and has a startsWith method
+      if (seatNumber.startsWith('F')) {
+        return 'First Class';
+      } else if (seatNumber.startsWith('B')) {
+        return 'Business Class';
+      } else if (seatNumber.startsWith('E')) {
+        return 'Economy Class';
       }
     }
-  
-    return 0;
+    return 'Unknown Class';
   };
   
-  const seatPrice = calculateSeatPrice(selectedSeat);
-  const totalAmount = parseInt(basePrice) + parseInt(seatPrice);
-
-  sessionStorage.setItem("totalAmount", totalAmount);
-  sessionStorage.setItem("seatPrice", seatPrice);
-
   const handleAlertClose = () => {
     setPaymentSuccess(false);
     if (paymentSuccess) {
       history.push('/confirmation');
     }
   };
-  
+
   const cardNumberErrorMessage = cardNumberError ? (
     <div className="error-message" style={{ color: 'red' }}>{cardNumberError}</div>
   ) : null;
@@ -120,7 +142,7 @@ function Payment() {
   return (
     <div>
       <div className="flight-details-container">
-        <h2 style={{ color: '#333', textAlign: 'center' }}>Cost Breakdown</h2>
+        <h2>Cost Breakdown</h2>
         <table>
           <tbody>
             <tr>
@@ -138,7 +160,8 @@ function Payment() {
               <td>₹{totalAmount}</td>
             </tr>
           </tbody>
-        <br/><br/>
+        </table>
+      </div>
 
       <div className="container">
         <div className="row">
@@ -170,56 +193,56 @@ function Payment() {
                           </div>
 
                           <div className="col-6">
-                          <div className="form__div" style={{ display: 'flex' }}>
-                            <div style={{ flex: 1, marginRight: '10px' }}>
-                              <div>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="MM / YY"
-                                  value={expiry}
-                                  onChange={(e) => {
-                                    const inputValue = e.target.value;
-                                    const sanitizedInput = inputValue.replace(/\D/g, '').substring(0, 4);
-                                    const formattedInput = sanitizedInput.replace(/(\d{2})(\d{0,2})/, '$1/$2');
-                                    const [inputMonth, inputYear] = formattedInput.split('/');
-                                    const isValidMonth = inputMonth >= '01' && inputMonth <= '12';
-                                    const isValidYear = inputYear >= '23' && inputYear <= '28';
-                                    setExpiry(formattedInput);
-                                    setExpiryError(
-                                      !isValidMonth || !isValidYear
-                                        ? 'Invalid expiry date (MM / YY)'
-                                        : ''
-                                    );
-                                  }}
-                                />
+                            <div className="form__div" style={{ display: 'flex' }}>
+                              <div style={{ flex: 1, marginRight: '10px' }}>
+                                <div>
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="MM / YY"
+                                    value={expiry}
+                                    onChange={(e) => {
+                                      const inputValue = e.target.value;
+                                      const sanitizedInput = inputValue.replace(/\D/g, '').substring(0, 4);
+                                      const formattedInput = sanitizedInput.replace(/(\d{2})(\d{0,2})/, '$1/$2');
+                                      const [inputMonth, inputYear] = formattedInput.split('/');
+                                      const isValidMonth = inputMonth >= '01' && inputMonth <= '12';
+                                      const isValidYear = inputYear >= '23' && inputYear <= '28';
+                                      setExpiry(formattedInput);
+                                      setExpiryError(
+                                        !isValidMonth || !isValidYear
+                                          ? 'Invalid expiry date (MM / YY)'
+                                          : ''
+                                      );
+                                    }}
+                                  />
+                                </div>
+                                {expiryErrorMessage}
                               </div>
-                              {expiryErrorMessage}
-                            </div>
 
-                            <div style={{ flex: 1 }}>
-                              <div>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="CVV"
-                                  value={cvv}
-                                  onChange={(e) => {
-                                    const inputValue = e.target.value;
-                                    const sanitizedInput = inputValue.replace(/\D/g, '').substring(0, 3);
-                                    setCVV(sanitizedInput);
-                                    setCVVError(
-                                      sanitizedInput.length !== 3
-                                        ? 'CVV must be a 3-digit number'
-                                        : ''
-                                    );
-                                  }}
-                                />
+                              <div style={{ flex: 1 }}>
+                                <div>
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="CVV"
+                                    value={cvv}
+                                    onChange={(e) => {
+                                      const inputValue = e.target.value;
+                                      const sanitizedInput = inputValue.replace(/\D/g, '').substring(0, 3);
+                                      setCVV(sanitizedInput);
+                                      setCVVError(
+                                        sanitizedInput.length !== 3
+                                          ? 'CVV must be a 3-digit number'
+                                          : ''
+                                      );
+                                    }}
+                                  />
+                                </div>
+                                {cvvErrorMessage}
                               </div>
-                              {cvvErrorMessage}
                             </div>
                           </div>
-                        </div>
 
                           <div className="col-12">
                             <div className="form__div">
@@ -249,10 +272,10 @@ function Payment() {
                               <Button
                                 style={{ backgroundColor: '#ccc', color: '#000', flex: 1, marginLeft: '5px' }}
                                 onClick={() => {
-                                  setCardNumber('');
-                                  setExpiry('');
-                                  setCVV('');
-                                  setName('');
+                                  setCardNumber('1234 5678 9098 7654');
+                                  setExpiry('12/24');
+                                  setCVV('123');
+                                  setName('Chai');
                                   setCardNumberError('');
                                   setNameError('');
                                   setCVVError('');
@@ -273,13 +296,18 @@ function Payment() {
           </div>
         </div>
       </div>
-      </table>
-      </div>
+
       <CustomAlert
         title="Payment Successful"
         message="Your payment was successful!"
         open={paymentSuccess}
         onClose={handleAlertClose}
+      />
+        <CustomAlert
+        title="Payment Failed! Please Retry"
+        message="Your payment was denied please retry or use different card!"
+        open={paymentError}
+        onClose={handlePayment}
       />
     </div>
   );

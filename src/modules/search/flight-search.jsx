@@ -150,6 +150,13 @@ const FlightSearch = (props) => {
     return `${year}-${month}-${day}`;
   };
 
+  const handleClearFields = () => {
+    setSource(null);
+    setDest(null);
+    setDeptDate("");
+    setReturnDate("");
+  };
+
   return (
     <Paper elevation={0} className={classes.paper}>
       <Grid container className={classes.centerContainer}>
@@ -219,26 +226,35 @@ const FlightSearch = (props) => {
             }}
           />
         )}
-        <Button
-          variant="contained"
-          style={{
-            backgroundColor: "black",
-            color: "white",
-            borderRadius: 4,
-          }}
-          className={`${classes.filterContainer} ${classes.centerButton}`}
-          onClick={handleSearchFlight}
-          disabled={validateSearch(
-            source,
-            dest,
-            deptDate,
-            returnDate,
-            selectTrip
-          )}
-        >
-          {`Search Flight`}
-        </Button>
-
+        <div className={classes.centerButton}>
+          <Button
+            variant="contained"
+            style={{
+              backgroundColor: "black",
+              color: "white",
+              borderRadius: 4,
+              marginRight: 8, // Add margin to the right for spacing
+            }}
+            className={classes.filterContainer}
+            onClick={handleSearchFlight}
+            disabled={validateSearch(
+              source,
+              dest,
+              deptDate,
+              returnDate,
+              selectTrip
+            )}
+          >
+            {`Search Flight`}
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleClearFields}
+            className={classes.clearButton}
+          >
+            Clear Fields
+          </Button>
+        </div>
         {cityError && (
           <Typography variant="body1" color="error">
             {`Source and Destination City cannot be the same`}
