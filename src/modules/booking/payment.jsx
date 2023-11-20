@@ -275,10 +275,10 @@ function Payment() {
                               <Button
                                 style={{ backgroundColor: '#ccc', color: '#000', flex: 1, marginLeft: '5px' }}
                                 onClick={() => {
-                                  setCardNumber('');
-                                  setExpiry('');
-                                  setCVV('');
-                                  setName('');
+                                  setCardNumber('1234 5678 9098 7654');
+                                  setExpiry('12/24');
+                                  setCVV('123');
+                                  setName('Chai');
                                   setCardNumberError('');
                                   setNameError('');
                                   setCVVError('');

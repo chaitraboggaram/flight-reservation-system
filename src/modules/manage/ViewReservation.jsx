@@ -19,6 +19,7 @@ import {
 } from "@material-ui/core";
 import ManageReservationService from "../../services/ManageReservationService";
 import BookingService from "../../services/BookingService";
+import "./view-reservation.css";
 
 const ViewReservation = (props) => {
   const { bookingId } = useParams();
@@ -66,7 +67,6 @@ const ViewReservation = (props) => {
   };
 
   const handleEdit = () => {
-    // props.history.push(`/edit-reservation/${bookingId}/${userId}`);
     BookingService.getAllSeatsFromAFlight(flightNumber).then((res) => {
       setSeatDetails(res.data);
       setEditMode(true);
@@ -102,12 +102,10 @@ const ViewReservation = (props) => {
       },
     };
 
-    // Update the state with the new bookingDetail
     setBookingDetail(updatedBookingDetail);
   };
 
   const handleCancelChanges = () => {
-    // Revert to the original seat details
     handleAddSeat(
       originalSeatDetails.seatNumber,
       originalSeatDetails.seatClass,
@@ -118,7 +116,6 @@ const ViewReservation = (props) => {
   };
 
   const handleSave = () => {
-    // Send the updated data to the backend
     setEditMode(false);
     setShowSaveCancel(false);
     try {
@@ -223,102 +220,168 @@ const ViewReservation = (props) => {
       {bookingDetail && (
         <Grid item xs={12}>
           <Paper style={{ padding: "20px" }}>
-            <Typography style={{ backgroundColor: "lightblue" }} variant="h5">
-              Booking Details:
-            </Typography>
+          <div style={{ textAlign: "center", marginBottom: "20px" }}>
+            <Typography variant="h3">Booking Details</Typography>
+          </div>
             <Divider style={{ margin: "10px 0" }} />
-            <Typography variant="body1">
-              <strong>Booking ID:</strong> {bookingDetail.bookingId}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Flight Number:</strong> {bookingDetail.flightNumber}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Departure:</strong> {bookingDetail.departure}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Arrival:</strong> {bookingDetail.arrival}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Departure date:</strong>{" "}
-              {bookingDetail.passenger.flightDetails[0].departureDate}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Departure time:</strong>{" "}
-              {bookingDetail.passenger.flightDetails[0].departureTime}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Arrival date:</strong>{" "}
-              {bookingDetail.passenger.flightDetails[0].arrivalDate}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Arrival time:</strong>{" "}
-              {bookingDetail.passenger.flightDetails[0].arrivalTime}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Email:</strong>{" "}
-              {editMode ? (
-                <input
-                  type="text"
-                  value={editedFields.emailId}
-                  onChange={(e) => handleFieldChange("emailId", e.target.value)}
-                  defaultValue={bookingDetail.passenger.emailId}
-                />
-              ) : (
-                bookingDetail.passenger.emailId
-              )}
-            </Typography>
+            <div className="confirmation-container">
+  <table className="confirmation-table">
+    <tbody>
+      <tr className="confirmation-table-row">
+        <td className="confirmation-table-header first-column">
+          <strong>Booking ID</strong>
+        </td>
+        <td className="confirmation-table-header second-column">
+          {bookingDetail.bookingId}
+        </td>
+      </tr>
+      <tr className="confirmation-table-row">
+        <td className="confirmation-table-header first-column">
+          <strong>Flight Number</strong>
+        </td>
+        <td className="confirmation-table-header second-column">
+          {bookingDetail.flightNumber}
+        </td>
+      </tr>
+      <tr className="confirmation-table-row">
+        <td className="confirmation-table-header first-column">
+          <strong>Departure</strong>
+        </td>
+        <td className="confirmation-table-header second-column">
+          {bookingDetail.departure}
+        </td>
+      </tr>
+      <tr className="confirmation-table-row">
+        <td className="confirmation-table-header first-column">
+          <strong>Arrival</strong>
+        </td>
+        <td className="confirmation-table-header second-column">
+          {bookingDetail.arrival}
+        </td>
+      </tr>
+      <tr className="confirmation-table-row">
+        <td className="confirmation-table-header first-column">
+          <strong>Departure date</strong>
+        </td>
+        <td className="confirmation-table-header second-column">
+          {bookingDetail.passenger.flightDetails[0].departureDate}
+        </td>
+      </tr>
+      <tr className="confirmation-table-row">
+        <td className="confirmation-table-header first-column">
+          <strong>Departure time</strong>
+        </td>
+        <td className="confirmation-table-header second-column">
+          {bookingDetail.passenger.flightDetails[0].departureTime}
+        </td>
+      </tr>
+      <tr className="confirmation-table-row">
+        <td className="confirmation-table-header first-column">
+          <strong>Arrival date</strong>
+        </td>
+        <td className="confirmation-table-header second-column">
+          {bookingDetail.passenger.flightDetails[0].arrivalDate}
+        </td>
+      </tr>
+      <tr className="confirmation-table-row">
+        <td className="confirmation-table-header first-column">
+          <strong>Arrival time</strong>
+        </td>
+        <td className="confirmation-table-header second-column">
+          {bookingDetail.passenger.flightDetails[0].arrivalTime}
+        </td>
+      </tr>
+      <tr className="confirmation-table-row">
+        <td className="confirmation-table-header first-column">
+          <strong>Email</strong>
+        </td>
+        <td className="confirmation-table-header second-column">
+          {editMode ? (
+            <input
+            type="text"
+            value={editedFields.emailId}
+            onChange={(e) => handleFieldChange("emailId", e.target.value)}
+            defaultValue={bookingDetail.passenger.emailId}
+            style={{ fontSize: "14px", width: "500px", height: "30px" }}
+          />               
+          ) : (
+            bookingDetail.passenger.emailId
+          )}
+        </td>
+      </tr>
+      <tr className="confirmation-table-row">
+        <td className="confirmation-table-header first-column">
+          <strong>First Name</strong>
+        </td>
+        <td className="confirmation-table-header second-column">
+          {editMode ? (
+            <input
+              type="text"
+              value={editedFields.firstName}
+              onChange={(e) => handleFieldChange("firstName", e.target.value)}
+              defaultValue={bookingDetail.passenger.firstName}
+              style={{ fontSize: "14px", width: "500px", height: "30px" }}
+            />
+          ) : (
+            bookingDetail.passenger.firstName
+          )}
+        </td>
+      </tr>
+      <tr className="confirmation-table-row">
+        <td className="confirmation-table-header first-column">
+          <strong>Last Name</strong>
+        </td>
+        <td className="confirmation-table-header second-column">
+          {editMode ? (
+            <input
+              type="text"
+              value={editedFields.lastName}
+              onChange={(e) => handleFieldChange("lastName", e.target.value)}
+              defaultValue={bookingDetail.passenger.lastName}
+              style={{ fontSize: "14px", width: "500px", height: "30px" }}
+            />
+          ) : (
+            bookingDetail.passenger.lastName
+          )}
+        </td>
+      </tr>
+      <tr className="confirmation-table-row">
+        <td className="confirmation-table-header first-column">
+          <strong>Seat Number</strong>
+        </td>
+        <td className="confirmation-table-header second-column">
+          {bookingDetail.passenger.flightDetails[0].seat.seatNumber}
+        </td>
+      </tr>
+      <tr className="confirmation-table-row">
+        <td className="confirmation-table-header first-column">
+          <strong>Seat Class</strong>
+        </td>
+        <td className="confirmation-table-header second-column">
+          {bookingDetail.passenger.flightDetails[0].seat.seatClass}
+        </td>
+      </tr>
+      <tr className="confirmation-table-row">
+        <td className="confirmation-table-header first-column">
+          <strong>Total Travel Fare</strong>
+        </td>
+        <td className="confirmation-table-header second-column">
+          {bookingDetail.passenger.payment[0].totalTravelFair}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <Divider style={{ margin: "10px 0" }} />
+</div>
 
-            <Typography variant="body1">
-              <strong>First Name:</strong>{" "}
-              {editMode ? (
-                <input
-                  type="text"
-                  value={editedFields.firstName}
-                  onChange={(e) =>
-                    handleFieldChange("firstName", e.target.value)
-                  }
-                  defaultValue={bookingDetail.passenger.firstName}
-                />
-              ) : (
-                bookingDetail.passenger.firstName
-              )}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Last Name:</strong>{" "}
-              {editMode ? (
-                <input
-                  type="text"
-                  value={editedFields.lastName}
-                  onChange={(e) =>
-                    handleFieldChange("lastName", e.target.value)
-                  }
-                  defaultValue={bookingDetail.passenger.lastName}
-                />
-              ) : (
-                bookingDetail.passenger.lastName
-              )}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Seat Number:</strong>{" "}
-              {bookingDetail.passenger.flightDetails[0].seat.seatNumber}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Seat Class:</strong>{" "}
-              {bookingDetail.passenger.flightDetails[0].seat.seatClass}
-            </Typography>
-            <Typography variant="body1">
-              <strong> Total Travel Fare:</strong>{" "}
-              {bookingDetail.passenger.payment[0].totalTravelFair}
-            </Typography>
-            <Divider style={{ margin: "10px 0" }} />
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               <Button
                 variant="contained"
-                color="primary"
+                color="black"
                 className="action-button"
                 onClick={handleRedirect}
-                style={{
+                style={{ 
+                  backgroundColor: "black", color: "white",
                   marginRight: "10px",
                   display: showSaveCancel ? "none" : "block",
                 }}
@@ -331,6 +394,7 @@ const ViewReservation = (props) => {
                 className="action-button"
                 onClick={handleEdit}
                 style={{
+                  backgroundColor: "black", color: "white",
                   marginRight: "10px",
                   display: showSaveCancel ? "none" : "block",
                 }}
@@ -343,6 +407,7 @@ const ViewReservation = (props) => {
                 className="action-button"
                 onClick={handleSave}
                 style={{
+                  backgroundColor: "black", color: "white",
                   marginRight: "10px",
                   display: showSaveCancel ? "block" : "none",
                 }}
@@ -355,6 +420,7 @@ const ViewReservation = (props) => {
                 className="action-button"
                 onClick={handleCancelChanges}
                 style={{
+                  backgroundColor: "black", color: "white",
                   marginRight: "10px",
                   display: showSaveCancel ? "block" : "none",
                 }}
@@ -365,6 +431,7 @@ const ViewReservation = (props) => {
                 variant="contained"
                 color="primary"
                 className="action-button"
+                style={{ backgroundColor: "black", color: "white" }}
                 onClick={handleDelete}
               >
                 Delete Reservation
@@ -374,21 +441,24 @@ const ViewReservation = (props) => {
             <Divider style={{ margin: "10px 0" }} />
             {editMode && (
               <>
-                <Typography variant="h6">Available Seats:</Typography>
+              <div style={{ textAlign: "center", marginBottom: "20px" }}>
+                <br/><br/><br/>
+                <Typography variant="h4">Available Seats</Typography>
+              </div>
                 <TableContainer component={Paper}>
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell style={{ backgroundColor: "lightblue" }}>
+                        <TableCell style={{ backgroundColor: "black", color: "white"  }}>
                           Seat Number
                         </TableCell>
-                        <TableCell style={{ backgroundColor: "lightblue" }}>
+                        <TableCell style={{ backgroundColor: "black", color: "white"  }}>
                           Seat Class
                         </TableCell>
-                        <TableCell style={{ backgroundColor: "lightblue" }}>
+                        <TableCell style={{ backgroundColor: "black", color: "white"  }}>
                           Seat Price
                         </TableCell>
-                        <TableCell style={{ backgroundColor: "lightblue" }}>
+                        <TableCell style={{ backgroundColor: "black", color: "white"  }}>
                           Action
                         </TableCell>
                       </TableRow>
@@ -405,6 +475,7 @@ const ViewReservation = (props) => {
                               <Button
                                 variant="contained"
                                 color="primary"
+                                style={{ backgroundColor: "black", color: "white" }}
                                 onClick={() =>
                                   handleAddSeat(
                                     seat.seatNumber,
@@ -440,7 +511,8 @@ const ViewReservation = (props) => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCancelDelete} color="primary">
+          <Button onClick={handleCancelDelete} color="primary" style={{ backgroundColor: "black", color: "white" }}
+>
             No
           </Button>
           <Button
