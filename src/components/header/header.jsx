@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { AppBar, Tabs, Tab, Typography, Toolbar, Button, Menu, MenuItem } from "@material-ui/core";
+import {
+  AppBar,
+  Tabs,
+  Tab,
+  Typography,
+  Toolbar,
+  Button,
+  Menu,
+  MenuItem,
+  Avatar,
+  IconButton
+} from "@material-ui/core";
 import { Link, useLocation, useHistory } from "react-router-dom";
 import "./header.css";
 import { useGoogleLogin } from "@react-oauth/google";
@@ -162,6 +173,9 @@ const Header = ({ tabs, onShowTab }) => {
         </Tabs>
         {isLoggedIn ? (
           <div>
+            {/* <IconButton sx={{ p: 0 }}>
+              <Avatar alt={`${userInfo?.given_name}`} src={`${userInfo?.picture}`} />
+            </IconButton> */}
             <Button
               style={{ backgroundColor: "black", color: "white", border: "1px solid white" }}
               onClick={handleMenuOpen}
